@@ -70,7 +70,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
             phoneDictionary["value"] = phone.value.stringValue
             phoneDictionary["label"] = "other"
             if let label = phone.label{
-                phoneDictionary["label"] = label
+                phoneDictionary["label"] = CNLabeledValue<NSString>.localizedString(forLabel: label)
             }
             phoneNumbers.append(phoneDictionary)
         }
@@ -83,7 +83,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
             emailDictionary["value"] = String(email.value)
             emailDictionary["label"] = "other"
             if let label = email.label{
-                emailDictionary["label"] = label
+                emailDictionary["label"] = CNLabeledValue<NSString>.localizedString(forLabel: label)
             }
             emailAddresses.append(emailDictionary)
         }
@@ -95,7 +95,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
             var addressDictionary = [String:String]()
             addressDictionary["label"] = ""
             if let label = address.label{
-                addressDictionary["label"] = label
+                addressDictionary["label"] = CNLabeledValue<NSString>.localizedString(forLabel: label)
             }
             addressDictionary["street"] = address.value.street
             addressDictionary["city"] = address.value.city
