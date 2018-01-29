@@ -1,0 +1,22 @@
+PODS:
+  - contacts_service (0.0.1):
+    - Flutter
+  - Flutter (1.0.0)
+
+DEPENDENCIES:
+  - contacts_service (from `/Users/clovisnicolas/contacts_service/ios`)
+  - Flutter (from `/Users/clovisnicolas/flutter/bin/cache/artifacts/engine/ios`)
+
+EXTERNAL SOURCES:
+  contacts_service:
+    :path: /Users/clovisnicolas/contacts_service/ios
+  Flutter:
+    :path: /Users/clovisnicolas/flutter/bin/cache/artifacts/engine/ios
+
+SPEC CHECKSUMS:
+  contacts_service: 9687dbab0d9e392c0270c77899c5592842dc6f90
+  Flutter: d674e78c937094a75ac71dd77e921e840bea3dbf
+
+PODFILE CHECKSUM: b3f98f39b16cc0a18e5ea9ecbe5cfbc88c2ad26a
+
+COCOAPODS: 1.3.1

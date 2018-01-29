@@ -32,8 +32,8 @@ class _MyAppState extends State<MyApp> {
             Contact c = _contacts?.elementAt(index);
             return new ListTile(
               onTap: (){Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new _ContactDetails(c)));},
-              leading : new CircleAvatar(child: new Text(c.displayName?.substring(0,2))),
-              title: new Text(c.displayName),
+              leading : new CircleAvatar(child: new Text(c.displayName?.substring(0,2) ?? "")),
+              title: new Text(c.displayName ?? ""),
             );
           },
         ),
