@@ -26,16 +26,18 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return new MaterialApp(
       home: new Scaffold(appBar: new AppBar(title: new Text('Contacts plugin example')),
-        body: new ListView.builder(
-          itemCount: _contacts?.length ?? 0,
-          itemBuilder: (BuildContext context, int index){
-            Contact c = _contacts?.elementAt(index);
-            return new ListTile(
-              onTap: (){Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new _ContactDetails(c)));},
-              leading : new CircleAvatar(child: new Text(c.displayName?.substring(0,2) ?? "")),
-              title: new Text(c.displayName ?? ""),
-            );
-          },
+        body: new SafeArea(
+          child: new ListView.builder(
+            itemCount: _contacts?.length ?? 0,
+            itemBuilder: (BuildContext context, int index){
+              Contact c = _contacts?.elementAt(index);
+              return new ListTile(
+                onTap: (){Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new _ContactDetails(c)));},
+                leading : new CircleAvatar(child: new Text(c.displayName?.substring(0,2) ?? "")),
+                title: new Text(c.displayName ?? ""),
+              );
+            },
+          ),
         ),
       ),
     );
@@ -51,16 +53,18 @@ class _ContactDetails extends StatelessWidget{
   Widget build(BuildContext context) {
     return new Scaffold(
         appBar: new AppBar(title: new Text(_contact.displayName ?? "")),
-        body: new ListView(
-          children: <Widget>[
-            new ListTile(title: new Text("Name"),trailing: new Text(_contact.givenName ?? "")),
-            new ListTile(title: new Text("Family name"),trailing: new Text(_contact.familyName ?? "")),
-            new ListTile(title: new Text("Company"),trailing: new Text(_contact.company ?? "")),
-            new ListTile(title: new Text("Job"),trailing: new Text(_contact.jobTitle ?? "")),
-            new _AddressesTile(_contact.postalAddresses),
-            new ItemsTile("Phones", _contact.phones),
-            new ItemsTile("Emails", _contact.emails)
-          ],
+        body: new SafeArea(
+          child: new ListView(
+            children: <Widget>[
+              new ListTile(title: new Text("Name"),trailing: new Text(_contact.givenName ?? "")),
+              new ListTile(title: new Text("Family name"),trailing: new Text(_contact.familyName ?? "")),
+              new ListTile(title: new Text("Company"),trailing: new Text(_contact.company ?? "")),
+              new ListTile(title: new Text("Job"),trailing: new Text(_contact.jobTitle ?? "")),
+              new _AddressesTile(_contact.postalAddresses),
+              new ItemsTile("Phones", _contact.phones),
+              new ItemsTile("Emails", _contact.emails)
+            ],
+          ),
         )
     );
   }
