@@ -12,16 +12,16 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
     
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch call.method {
-        case "getAllContacts":
-            result(getAllContacts())
+        case "getContacts":
+            result(getContacts(query: (call.arguments as! String?)))
         default:
             result(FlutterMethodNotImplemented)
         }
     }
     
-    func getAllContacts() -> [[String:Any]]{
+    func getContacts(query : String?) -> [[String:Any]]{
         var contacts : [CNContact] = []
-        
+        //Create the store, keys & fetch request
         let store = CNContactStore()
         let keys = [CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
                     CNContactEmailAddressesKey,
@@ -33,7 +33,11 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
                     CNContactOrganizationNameKey,
                     CNContactJobTitleKey] as [Any]
         let fetchRequest = CNContactFetchRequest(keysToFetch: keys as! [CNKeyDescriptor])
-        
+        // Set the predicate if there is a query
+        if let query = query{
+            fetchRequest.predicate = CNContact.predicateForContacts(matchingName: query)
+        }
+        // Fetch contacts
         do{
             try store.enumerateContacts(with: fetchRequest, usingBlock: { (contact, stop) -> Void in
                 contacts.append(contact)
@@ -43,7 +47,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
             print(error.localizedDescription)
             return []
         }
-        
+        // Transform the CNContacts into dictionaries
         var result = [[String:Any]]()
         for contact : CNContact in contacts{
             result.append(contactToDictionary(contact: contact))
