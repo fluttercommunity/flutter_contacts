@@ -11,10 +11,10 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
     }
     
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-        if(call.method == "getAllContacts"){
+        switch call.method {
+        case "getAllContacts":
             result(getAllContacts())
-        }
-        else{
+        default:
             result(FlutterMethodNotImplemented)
         }
     }
@@ -44,7 +44,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
             return []
         }
         
-        var result : [[String:Any]] = []
+        var result = [[String:Any]]()
         for contact : CNContact in contacts{
             result.append(contactToDictionary(contact: contact))
         }

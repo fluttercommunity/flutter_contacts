@@ -57,6 +57,7 @@ class _ContactDetails extends StatelessWidget{
           child: new ListView(
             children: <Widget>[
               new ListTile(title: new Text("Name"),trailing: new Text(_contact.givenName ?? "")),
+              new ListTile(title: new Text("Middle name"),trailing: new Text(_contact.middleName ?? "")),
               new ListTile(title: new Text("Family name"),trailing: new Text(_contact.familyName ?? "")),
               new ListTile(title: new Text("Company"),trailing: new Text(_contact.company ?? "")),
               new ListTile(title: new Text("Job"),trailing: new Text(_contact.jobTitle ?? "")),
