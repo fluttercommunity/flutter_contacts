@@ -59,16 +59,22 @@ public class Contact {
         contact.jobTitle = (String)map.get("jobTitle");
 
         ArrayList<HashMap> emails = (ArrayList<HashMap>) map.get("emails");
-        for(HashMap email : emails){
-            contact.emails.add(Item.fromMap(email));
+        if(emails != null){
+            for(HashMap email : emails){
+                contact.emails.add(Item.fromMap(email));
+            }
         }
         ArrayList<HashMap> phones = (ArrayList<HashMap>) map.get("phones");
-        for(HashMap phone : phones){
-            contact.emails.add(Item.fromMap(phone));
+        if(phones != null) {
+            for (HashMap phone : phones) {
+                contact.emails.add(Item.fromMap(phone));
+            }
         }
         ArrayList<HashMap> postalAddresses = (ArrayList<HashMap>) map.get("postalAddresses");
-        for(HashMap postalAddress : postalAddresses){
-            contact.postalAddresses.add(PostalAddress.fromMap(postalAddress));
+        if(postalAddresses != null) {
+            for (HashMap postalAddress : postalAddresses) {
+                contact.postalAddresses.add(PostalAddress.fromMap(postalAddress));
+            }
         }
         return contact;
     }
