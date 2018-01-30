@@ -54,6 +54,8 @@ public class ContactsServicePlugin implements MethodCallHandler {
       StructuredName.GIVEN_NAME,
       StructuredName.MIDDLE_NAME,
       StructuredName.FAMILY_NAME,
+      StructuredName.PREFIX,
+      StructuredName.SUFFIX,
       Phone.NUMBER,
       Phone.TYPE,
       Phone.LABEL,
@@ -123,6 +125,8 @@ public class ContactsServicePlugin implements MethodCallHandler {
         contact.givenName = cursor.getString(cursor.getColumnIndex(StructuredName.GIVEN_NAME));
         contact.middleName = cursor.getString(cursor.getColumnIndex(StructuredName.MIDDLE_NAME));
         contact.familyName = cursor.getString(cursor.getColumnIndex(StructuredName.FAMILY_NAME));
+        contact.prefix = cursor.getString(cursor.getColumnIndex(StructuredName.PREFIX));
+        contact.suffix = cursor.getString(cursor.getColumnIndex(StructuredName.SUFFIX));
       }
       //PHONES
       else if (mimeType.equals(Phone.CONTENT_ITEM_TYPE)){

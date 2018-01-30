@@ -29,6 +29,8 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
                     CNContactFamilyNameKey,
                     CNContactGivenNameKey,
                     CNContactMiddleNameKey,
+                    CNContactNamePrefixKey,
+                    CNContactNameSuffixKey,
                     CNContactPostalAddressesKey,
                     CNContactOrganizationNameKey,
                     CNContactJobTitleKey] as [Any]
@@ -64,6 +66,8 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
         result["givenName"] = contact.givenName
         result["familyName"] = contact.familyName
         result["middleName"] = contact.middleName
+        result["prefix"] = contact.namePrefix
+        result["suffix"] = contact.nameSuffix
         result["company"] = contact.organizationName
         result["jobTitle"] = contact.jobTitle
         

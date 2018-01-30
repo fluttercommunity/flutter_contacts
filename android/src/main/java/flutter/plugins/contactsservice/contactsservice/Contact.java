@@ -10,7 +10,7 @@ public class Contact {
     }
 
     String id;
-    String displayName, givenName, middleName, familyName, company, jobTitle;
+    String displayName, givenName, middleName, familyName, prefix, suffix, company, jobTitle;
     ArrayList<Item> emails = new ArrayList<>();
     ArrayList<Item> phones = new ArrayList<>();
     ArrayList<PostalAddress> postalAddresses = new ArrayList<>();
@@ -21,6 +21,8 @@ public class Contact {
         contactMap.put("givenName",givenName);
         contactMap.put("middleName",middleName);
         contactMap.put("familyName",familyName);
+        contactMap.put("prefix", prefix);
+        contactMap.put("suffix", suffix);
         contactMap.put("company",company);
         contactMap.put("jobTitle",jobTitle);
 

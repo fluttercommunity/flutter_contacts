@@ -17,7 +17,7 @@ class ContactsService {
 
 class Contact{
 
-  String displayName, givenName, middleName, familyName, company, jobTitle;
+  String displayName, givenName, middleName, prefix, suffix, familyName, company, jobTitle;
   Iterable<Item> emails;
   Iterable<Item> phones;
   Iterable<PostalAddress> postalAddresses;
@@ -27,6 +27,8 @@ class Contact{
     givenName = m["givenName"];
     middleName = m["middleName"];
     familyName = m["familyName"];
+    prefix = m["prefix"];
+    suffix = m["suffix"];
     company = m["company"];
     jobTitle = m["jobTitle"];
     emails = (m["emails"] as Iterable<Map>)?.map((m) => new Item.fromMap(m));
