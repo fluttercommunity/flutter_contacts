@@ -18,7 +18,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   initPlatformState() async {
-    var contacts = await ContactsService.getAllContacts();
+    var contacts = await ContactsService.getContacts();
     setState(() {_contacts = contacts;});
   }
 

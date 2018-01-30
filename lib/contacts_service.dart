@@ -5,8 +5,12 @@ import 'package:flutter/services.dart';
 class ContactsService {
   static const MethodChannel _channel = const MethodChannel('github.com/clovisnicolas/flutter_contacts');
 
-  static Future<Iterable<Contact>> getAllContacts() async{
-    Iterable<Map> contacts = await _channel.invokeMethod('getAllContacts');
+  /**
+   * Fetches all contacts, or when specified,
+   * the contacts with a name matching [query]
+   */
+  static Future<Iterable<Contact>> getContacts({String query}) async{
+    Iterable<Map> contacts = await _channel.invokeMethod('getContacts', {"query" : query});
     return contacts.map((m) => new Contact.fromMap(m));
   }
 }

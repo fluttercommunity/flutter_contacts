@@ -17,18 +17,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
-import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.MethodCall;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
-
 import static android.provider.ContactsContract.CommonDataKinds.Email;
 import static android.provider.ContactsContract.CommonDataKinds.Organization;
 import static android.provider.ContactsContract.CommonDataKinds.Phone;
 import static android.provider.ContactsContract.CommonDataKinds.StructuredName;
 import static android.provider.ContactsContract.CommonDataKinds.StructuredPostal;
-import static android.provider.ContactsContract.Contacts;
 
 public class ContactsServicePlugin implements MethodCallHandler {
 
@@ -45,53 +38,48 @@ public class ContactsServicePlugin implements MethodCallHandler {
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
-    if (call.method.equals("getAllContacts")) {
-      result.success(this.getAllContacts());
+    if (call.method.equals("getContacts")) {
+      String query = call.argument("query");
+      result.success(this.getContacts(query));
     } else {
       result.notImplemented();
     }
   }
 
   private static final String[] PROJECTION =
-          {
-                  ContactsContract.Data.CONTACT_ID,
-                  ContactsContract.Profile.DISPLAY_NAME,
-                  ContactsContract.Contacts.Data.MIMETYPE,
-                  StructuredName.DISPLAY_NAME,
-                  StructuredName.GIVEN_NAME,
-                  StructuredName.MIDDLE_NAME,
-                  StructuredName.FAMILY_NAME,
-                  Phone.NUMBER,
-                  Phone.TYPE,
-                  Phone.LABEL,
-                  Email.DATA,
-                  Email.ADDRESS,
-                  Email.TYPE,
-                  Email.LABEL,
-                  Organization.COMPANY,
-                  Organization.TITLE,
-                  StructuredPostal.FORMATTED_ADDRESS,
-                  StructuredPostal.TYPE,
-                  StructuredPostal.LABEL,
-                  StructuredPostal.STREET,
-                  StructuredPostal.POBOX,
-                  StructuredPostal.NEIGHBORHOOD,
-                  StructuredPostal.CITY,
-                  StructuredPostal.REGION,
-                  StructuredPostal.POSTCODE,
-                  StructuredPostal.COUNTRY,
-          };
+    {
+      ContactsContract.Data.CONTACT_ID,
+      ContactsContract.Profile.DISPLAY_NAME,
+      ContactsContract.Contacts.Data.MIMETYPE,
+      StructuredName.DISPLAY_NAME,
+      StructuredName.GIVEN_NAME,
+      StructuredName.MIDDLE_NAME,
+      StructuredName.FAMILY_NAME,
+      Phone.NUMBER,
+      Phone.TYPE,
+      Phone.LABEL,
+      Email.DATA,
+      Email.ADDRESS,
+      Email.TYPE,
+      Email.LABEL,
+      Organization.COMPANY,
+      Organization.TITLE,
+      StructuredPostal.FORMATTED_ADDRESS,
+      StructuredPostal.TYPE,
+      StructuredPostal.LABEL,
+      StructuredPostal.STREET,
+      StructuredPostal.POBOX,
+      StructuredPostal.NEIGHBORHOOD,
+      StructuredPostal.CITY,
+      StructuredPostal.REGION,
+      StructuredPostal.POSTCODE,
+      StructuredPostal.COUNTRY,
+    };
 
 
   @TargetApi(Build.VERSION_CODES.ECLAIR)
-  private ArrayList getAllContacts() {
-    Cursor cursor = contentResolver.query(
-            ContactsContract.Data.CONTENT_URI, PROJECTION,
-            ContactsContract.Data.MIMETYPE + "=? OR " + ContactsContract.Data.MIMETYPE + "=? OR " + ContactsContract.Data.MIMETYPE + "=? OR " + ContactsContract.Data.MIMETYPE + "=? OR " + ContactsContract.Data.MIMETYPE + "=?",
-            new String[]{Email.CONTENT_ITEM_TYPE, Phone.CONTENT_ITEM_TYPE, StructuredName.CONTENT_ITEM_TYPE, Organization.CONTENT_ITEM_TYPE, StructuredPostal.CONTENT_ITEM_TYPE},
-            null
-    );
-    ArrayList<Contact> contacts = getContactsFrom(cursor);
+  private ArrayList getContacts(String query) {
+    ArrayList<Contact> contacts = getContactsFrom(getCursor(query));
     //Transform the list of contacts to a list of Map
     ArrayList<HashMap> contactMaps = new ArrayList<>();
     for(Contact c : contacts){
@@ -100,6 +88,22 @@ public class ContactsServicePlugin implements MethodCallHandler {
     return contactMaps;
   }
 
+  @TargetApi(Build.VERSION_CODES.ECLAIR)
+  private Cursor getCursor(String query){
+    String selection = ContactsContract.Data.MIMETYPE + "=? OR " + ContactsContract.Data.MIMETYPE + "=? OR " + ContactsContract.Data.MIMETYPE + "=? OR " + ContactsContract.Data.MIMETYPE + "=? OR " + ContactsContract.Data.MIMETYPE + "=?";
+    String[] selectionArgs = new String[]{Email.CONTENT_ITEM_TYPE, Phone.CONTENT_ITEM_TYPE, StructuredName.CONTENT_ITEM_TYPE, Organization.CONTENT_ITEM_TYPE, StructuredPostal.CONTENT_ITEM_TYPE};
+    if(query != null){
+      selectionArgs = new String[]{"%" + query + "%"};
+      selection = ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " LIKE ?";
+    }
+    return contentResolver.query(ContactsContract.Data.CONTENT_URI, PROJECTION, selection, selectionArgs, null);
+  }
+
+  /**
+   * Builds the list of contacts from the cursor
+   * @param cursor
+   * @return the list of contacts
+   */
   private ArrayList<Contact> getContactsFrom(Cursor cursor) {
     HashMap<String, Contact> map = new LinkedHashMap<>();
 
