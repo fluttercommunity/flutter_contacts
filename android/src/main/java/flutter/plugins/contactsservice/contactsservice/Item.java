@@ -2,6 +2,7 @@ package flutter.plugins.contactsservice.contactsservice;
 
 import android.database.Cursor;
 import android.provider.ContactsContract;
+import static android.provider.ContactsContract.CommonDataKinds;
 
 import java.util.HashMap;
 
@@ -25,6 +26,10 @@ public class Item{
         return result;
     }
 
+    public static Item fromMap(HashMap<String,String> map){
+        return new Item(map.get("label"), map.get("value"));
+    }
+
     public static String getPhoneLabel(int type){
         switch (type) {
             case ContactsContract.CommonDataKinds.Phone.TYPE_HOME:
@@ -40,18 +45,37 @@ public class Item{
 
     public static String getEmailLabel(int type, Cursor cursor) {
         switch (type) {
-            case ContactsContract.CommonDataKinds.Email.TYPE_HOME:
+            case CommonDataKinds.Email.TYPE_HOME:
                 return "home";
-            case ContactsContract.CommonDataKinds.Email.TYPE_WORK:
+            case CommonDataKinds.Email.TYPE_WORK:
                 return "work";
-            case ContactsContract.CommonDataKinds.Email.TYPE_MOBILE:
+            case CommonDataKinds.Email.TYPE_MOBILE:
                 return "mobile";
-            case ContactsContract.CommonDataKinds.Email.TYPE_CUSTOM:
-                if (cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.LABEL)) != null) {
-                    return cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.LABEL)).toLowerCase();
+            case CommonDataKinds.Email.TYPE_CUSTOM:
+                if (cursor.getString(cursor.getColumnIndex(CommonDataKinds.Email.LABEL)) != null) {
+                    return cursor.getString(cursor.getColumnIndex(CommonDataKinds.Email.LABEL)).toLowerCase();
                 } else return "";
             default:
                 return "other";
         }
     }
+
+    public static int stringToPhoneType(String label) {
+        switch (label) {
+            case "home": return CommonDataKinds.Phone.TYPE_HOME;
+            case "work": return CommonDataKinds.Phone.TYPE_WORK;
+            case "mobile": return CommonDataKinds.Phone.TYPE_MOBILE;
+            default: return CommonDataKinds.Phone.TYPE_OTHER;
+        }
+    }
+
+    public static int stringToEmailType(String label) {
+        switch (label) {
+            case "home": return CommonDataKinds.Email.TYPE_HOME;
+            case "work": return CommonDataKinds.Email.TYPE_WORK;
+            case "mobile": return CommonDataKinds.Email.TYPE_MOBILE;
+            default: return CommonDataKinds.Email.TYPE_OTHER;
+        }
+    }
+
 }

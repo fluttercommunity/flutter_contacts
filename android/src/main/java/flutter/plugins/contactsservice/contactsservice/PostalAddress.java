@@ -1,8 +1,7 @@
 package flutter.plugins.contactsservice.contactsservice;
 
 import android.database.Cursor;
-import android.text.TextUtils;
-
+import static android.provider.ContactsContract.CommonDataKinds;
 import static android.provider.ContactsContract.CommonDataKinds.StructuredPostal;
 
 import java.util.HashMap;
@@ -20,7 +19,16 @@ public class PostalAddress {
         map.put("country", cursor.getString(cursor.getColumnIndex(StructuredPostal.COUNTRY)));
     }
 
-    String getLabel(Cursor cursor) {
+    private PostalAddress(){}
+
+    String label = map.get("label");
+    String street = map.get("street");
+    String city = map.get("city");
+    String postcode = map.get("postcode");
+    String region = map.get("region");
+    String country = map.get("country");
+
+    private String getLabel(Cursor cursor) {
         switch (cursor.getInt(cursor.getColumnIndex(StructuredPostal.TYPE))) {
             case StructuredPostal.TYPE_HOME:
                 return "home";
@@ -33,4 +41,17 @@ public class PostalAddress {
         return "other";
     }
 
+    public static PostalAddress fromMap(HashMap<String,String> postalAddress) {
+        PostalAddress address = new PostalAddress();
+        address.map = postalAddress;
+        return address;
+    }
+
+    public static int stringToPostalAddressType(String label) {
+        switch (label) {
+            case "home": return CommonDataKinds.StructuredPostal.TYPE_HOME;
+            case "work": return CommonDataKinds.StructuredPostal.TYPE_WORK;
+            default: return CommonDataKinds.StructuredPostal.TYPE_OTHER;
+        }
+    }
 }

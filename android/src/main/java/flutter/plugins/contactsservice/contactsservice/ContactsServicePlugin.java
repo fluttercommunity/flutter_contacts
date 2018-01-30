@@ -7,6 +7,7 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 import android.annotation.TargetApi;
+import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.os.Build;
@@ -17,12 +18,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import static android.provider.ContactsContract.CommonDataKinds;
 import static android.provider.ContactsContract.CommonDataKinds.Email;
 import static android.provider.ContactsContract.CommonDataKinds.Organization;
 import static android.provider.ContactsContract.CommonDataKinds.Phone;
 import static android.provider.ContactsContract.CommonDataKinds.StructuredName;
 import static android.provider.ContactsContract.CommonDataKinds.StructuredPostal;
 
+@TargetApi(Build.VERSION_CODES.ECLAIR)
 public class ContactsServicePlugin implements MethodCallHandler {
 
   ContactsServicePlugin(ContentResolver contentResolver){
@@ -38,10 +41,21 @@ public class ContactsServicePlugin implements MethodCallHandler {
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
-    if (call.method.equals("getContacts")) {
-      result.success(this.getContacts((String)call.arguments));
-    } else {
-      result.notImplemented();
+
+    switch(call.method){
+      case "getContacts":
+        result.success(this.getContacts((String)call.arguments));
+        break;
+      case "addContact":
+        Contact c = Contact.fromMap((HashMap)call.arguments);
+        if(this.addContact(c)) {
+          result.success(null);
+        } else{
+          result.error(null, "Failed to add the contact", null);
+        }
+        break;
+      default:
+        result.notImplemented();
     }
   }
 
@@ -89,7 +103,6 @@ public class ContactsServicePlugin implements MethodCallHandler {
     return contactMaps;
   }
 
-  @TargetApi(Build.VERSION_CODES.ECLAIR)
   private Cursor getCursor(String query){
     String selection = ContactsContract.Data.MIMETYPE + "=? OR " + ContactsContract.Data.MIMETYPE + "=? OR " + ContactsContract.Data.MIMETYPE + "=? OR " + ContactsContract.Data.MIMETYPE + "=? OR " + ContactsContract.Data.MIMETYPE + "=?";
     String[] selectionArgs = new String[]{Email.CONTENT_ITEM_TYPE, Phone.CONTENT_ITEM_TYPE, StructuredName.CONTENT_ITEM_TYPE, Organization.CONTENT_ITEM_TYPE, StructuredPostal.CONTENT_ITEM_TYPE};
@@ -157,4 +170,72 @@ public class ContactsServicePlugin implements MethodCallHandler {
     return new ArrayList<>(map.values());
   }
 
+  private boolean addContact(Contact contact){
+
+    ArrayList<ContentProviderOperation> ops = new ArrayList<>();
+
+    ContentProviderOperation.Builder op = ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
+            .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null)
+            .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, null);
+    ops.add(op.build());
+
+    op = ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+            .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+            .withValue(ContactsContract.Data.MIMETYPE, StructuredName.CONTENT_ITEM_TYPE)
+            .withValue(StructuredName.GIVEN_NAME, contact.givenName)
+            .withValue(StructuredName.MIDDLE_NAME, contact.middleName)
+            .withValue(StructuredName.FAMILY_NAME, contact.familyName)
+            .withValue(StructuredName.PREFIX, contact.prefix)
+            .withValue(StructuredName.SUFFIX, contact.suffix);
+    ops.add(op.build());
+
+    op = ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+            .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+            .withValue(ContactsContract.Data.MIMETYPE, Organization.CONTENT_ITEM_TYPE)
+            .withValue(Organization.COMPANY, contact.company)
+            .withValue(Organization.TITLE, contact.jobTitle);
+    ops.add(op.build());
+
+    op.withYieldAllowed(true);
+
+    //Phones
+    for(Item phone : contact.phones){
+      op = ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+              .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+              .withValue(ContactsContract.Data.MIMETYPE, CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+              .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, phone.value)
+              .withValue(CommonDataKinds.Phone.TYPE, Item.stringToPhoneType(phone.label));
+      ops.add(op.build());
+    }
+
+    //Emails
+    for (Item email : contact.emails) {
+      op = ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+              .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+              .withValue(ContactsContract.Data.MIMETYPE, CommonDataKinds.Email.CONTENT_ITEM_TYPE)
+              .withValue(CommonDataKinds.Email.ADDRESS, email.value)
+              .withValue(CommonDataKinds.Email.TYPE, Item.stringToEmailType(email.label));
+      ops.add(op.build());
+    }
+    //Postal addresses
+    for (PostalAddress address : contact.postalAddresses) {
+      op = ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+              .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+              .withValue(ContactsContract.Data.MIMETYPE, CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE)
+              .withValue(CommonDataKinds.StructuredPostal.TYPE, PostalAddress.stringToPostalAddressType(address.label))
+              .withValue(CommonDataKinds.StructuredPostal.STREET, address.street)
+              .withValue(CommonDataKinds.StructuredPostal.CITY, address.city)
+              .withValue(CommonDataKinds.StructuredPostal.REGION, address.region)
+              .withValue(CommonDataKinds.StructuredPostal.POSTCODE, address.postcode)
+              .withValue(CommonDataKinds.StructuredPostal.COUNTRY, address.country);
+      ops.add(op.build());
+    }
+
+    try {
+      contentResolver.applyBatch(ContactsContract.AUTHORITY, ops);
+      return true;
+    } catch (Exception e) {
+      return false;
+    }
+  }
 }

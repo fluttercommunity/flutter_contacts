@@ -1,7 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:contacts_service/contacts_service.dart';
 
-void main() => runApp(new MyApp());
+void main() => runApp(new DemoApp());
+
+class DemoApp extends StatelessWidget{
+  @override
+  Widget build(BuildContext context) {
+    return new MaterialApp(
+      routes: <String, WidgetBuilder>{
+        '/add': (BuildContext context) => new _AddContactPage()
+      },
+      home: new MyApp()
+    );
+  }
+}
 
 class MyApp extends StatefulWidget {
   @override
@@ -24,20 +36,23 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-      home: new Scaffold(appBar: new AppBar(title: new Text('Contacts plugin example')),
-        body: new SafeArea(
-          child: new ListView.builder(
-            itemCount: _contacts?.length ?? 0,
-            itemBuilder: (BuildContext context, int index){
-              Contact c = _contacts?.elementAt(index);
-              return new ListTile(
-                onTap: (){Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new _ContactDetails(c)));},
-                leading : new CircleAvatar(child: new Text(c.displayName?.substring(0,2) ?? "")),
-                title: new Text(c.displayName ?? ""),
-              );
-            },
-          ),
+    return new Scaffold(
+      appBar: new AppBar(title: new Text('Contacts plugin example')),
+      floatingActionButton: new FloatingActionButton(
+        child: new Icon(Icons.add),
+        onPressed: (){Navigator.of(context).pushNamed("/add");}
+      ),
+      body: new SafeArea(
+        child: new ListView.builder(
+          itemCount: _contacts?.length ?? 0,
+          itemBuilder: (BuildContext context, int index) {
+            Contact c = _contacts?.elementAt(index);
+            return new ListTile(
+              onTap: () { Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new _ContactDetails(c)));},
+              leading: new CircleAvatar(child: new Text(c.displayName?.substring(0, 2) ?? "")),
+              title: new Text(c.displayName ?? ""),
+            );
+          },
         ),
       ),
     );
@@ -115,11 +130,46 @@ class ItemsTile extends StatelessWidget{
         children: <Widget>[
           new ListTile(title : new Text(_title)),
           new Column(
-              children: _items.map((i) => new Padding(
-                  padding : const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: new ListTile(title: new Text(i.label ?? ""), trailing: new Text(i.value ?? "")))).toList()
+            children: _items.map((i) => new Padding(
+              padding : const EdgeInsets.symmetric(horizontal: 16.0),
+              child: new ListTile(title: new Text(i.label ?? ""), trailing: new Text(i.value ?? "")))).toList()
           )
         ]
+    );
+  }
+}
+
+class _AddContactPage extends StatelessWidget{
+
+  Contact contact = new Contact();
+
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      appBar: new AppBar(
+        title: new Text("Add a contact"),
+        actions: <Widget>[
+          new FlatButton(
+            onPressed: (){
+              ContactsService.addContact(contact);
+              Navigator.of(context).pop();
+            },
+            child: new Icon(Icons.save, color: Colors.white)
+          )
+        ],
+      ),
+      body: new Container(
+        padding: new EdgeInsets.all(12.0),
+        child: new Form(
+          child: new ListView(
+            children: <Widget>[
+              new TextFormField(decoration: const InputDecoration(labelText: 'First name')),
+              new TextFormField(decoration: const InputDecoration(labelText: 'Middle name')),
+              new TextFormField(decoration: const InputDecoration(labelText: 'Last name')),
+            ],
+          )
+        ),
+      ),
     );
   }
 }

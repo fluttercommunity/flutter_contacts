@@ -13,9 +13,13 @@ class ContactsService {
     Iterable<Map> contacts = await _channel.invokeMethod('getContacts', query);
     return contacts.map((m) => new Contact.fromMap(m));
   }
+
+  static Future addContact(Contact contact) => _channel.invokeMethod('addContact', contact);
 }
 
 class Contact{
+
+  Contact();
 
   String displayName, givenName, middleName, prefix, suffix, familyName, company, jobTitle;
   Iterable<Item> emails;
