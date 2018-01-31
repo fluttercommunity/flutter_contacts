@@ -10,6 +10,8 @@ To use this plugin, add `contacts_service` as a [dependency in your pubspec.yaml
 Make sure you add the following permissions to your Android Manifest
 ```
 <uses-permission android:name="android.permission.READ_CONTACTS" />
+<uses-permission android:name="android.permission.WRITE_CONTACTS" />
+
 ```
 
 ## Example
