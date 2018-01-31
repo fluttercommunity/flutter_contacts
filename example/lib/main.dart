@@ -178,18 +178,18 @@ class _AddContactPageState extends State<_AddContactPage>{
               new TextFormField(decoration: const InputDecoration(labelText: 'Last name'), onSaved: (v) => contact.familyName = v),
               new TextFormField(decoration: const InputDecoration(labelText: 'Prefix'), onSaved: (v) => contact.prefix = v),
               new TextFormField(decoration: const InputDecoration(labelText: 'Suffix'), onSaved: (v) => contact.suffix = v),
-              new TextFormField(decoration: const InputDecoration(labelText: 'Company'), onSaved: (v) => contact.company = v),
-              new TextFormField(decoration: const InputDecoration(labelText: 'Job'), onSaved: (v) => contact.jobTitle = v),
-              new TextFormField(
-                  decoration: const InputDecoration(labelText: 'E-mail'),
-                  onSaved: (v) => contact.emails = [new Item(label: "work", value: v)],
-                  keyboardType: TextInputType.emailAddress
-              ),
               new TextFormField(
                   decoration: const InputDecoration(labelText: 'Phone'),
                   onSaved: (v) => contact.phones = [new Item(label: "mobile", value: v)],
                   keyboardType: TextInputType.phone
               ),
+              new TextFormField(
+                  decoration: const InputDecoration(labelText: 'E-mail'),
+                  onSaved: (v) => contact.emails = [new Item(label: "work", value: v)],
+                  keyboardType: TextInputType.emailAddress
+              ),
+              new TextFormField(decoration: const InputDecoration(labelText: 'Company'), onSaved: (v) => contact.company = v),
+              new TextFormField(decoration: const InputDecoration(labelText: 'Job'), onSaved: (v) => contact.jobTitle = v),
               new TextFormField(decoration: const InputDecoration(labelText: 'Street'), onSaved: (v) => address.street = v),
               new TextFormField(decoration: const InputDecoration(labelText: 'City'), onSaved: (v) => address.city = v),
               new TextFormField(decoration: const InputDecoration(labelText: 'Region'), onSaved: (v) => address.region = v),

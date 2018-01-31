@@ -1,11 +1,15 @@
 package flutter.plugins.contactsservice.contactsservice;
 
+import android.annotation.TargetApi;
 import android.database.Cursor;
+import android.os.Build;
+
 import static android.provider.ContactsContract.CommonDataKinds;
 import static android.provider.ContactsContract.CommonDataKinds.StructuredPostal;
 
 import java.util.HashMap;
 
+@TargetApi(Build.VERSION_CODES.ECLAIR)
 public class PostalAddress {
 
     HashMap<String,String> map = new HashMap<>();
@@ -48,10 +52,13 @@ public class PostalAddress {
     }
 
     public static int stringToPostalAddressType(String label) {
-        switch (label) {
-            case "home": return CommonDataKinds.StructuredPostal.TYPE_HOME;
-            case "work": return CommonDataKinds.StructuredPostal.TYPE_WORK;
-            default: return CommonDataKinds.StructuredPostal.TYPE_OTHER;
+        if(label != null) {
+            switch (label) {
+                case "home": return CommonDataKinds.StructuredPostal.TYPE_HOME;
+                case "work": return CommonDataKinds.StructuredPostal.TYPE_WORK;
+                default: return CommonDataKinds.StructuredPostal.TYPE_OTHER;
+            }
         }
+        return StructuredPostal.TYPE_OTHER;
     }
 }

@@ -61,21 +61,27 @@ public class Item{
     }
 
     public static int stringToPhoneType(String label) {
-        switch (label) {
-            case "home": return CommonDataKinds.Phone.TYPE_HOME;
-            case "work": return CommonDataKinds.Phone.TYPE_WORK;
-            case "mobile": return CommonDataKinds.Phone.TYPE_MOBILE;
-            default: return CommonDataKinds.Phone.TYPE_OTHER;
+        if (label != null) {
+            switch (label) {
+                case "home": return CommonDataKinds.Phone.TYPE_HOME;
+                case "work": return CommonDataKinds.Phone.TYPE_WORK;
+                case "mobile": return CommonDataKinds.Phone.TYPE_MOBILE;
+                default: return CommonDataKinds.Phone.TYPE_OTHER;
+            }
         }
+        return CommonDataKinds.Phone.TYPE_OTHER;
     }
 
     public static int stringToEmailType(String label) {
-        switch (label) {
-            case "home": return CommonDataKinds.Email.TYPE_HOME;
-            case "work": return CommonDataKinds.Email.TYPE_WORK;
-            case "mobile": return CommonDataKinds.Email.TYPE_MOBILE;
-            default: return CommonDataKinds.Email.TYPE_OTHER;
+        if (label != null) {
+            switch (label) {
+                case "home": return CommonDataKinds.Email.TYPE_HOME;
+                case "work": return CommonDataKinds.Email.TYPE_WORK;
+                case "mobile": return CommonDataKinds.Email.TYPE_MOBILE;
+                default: return CommonDataKinds.Email.TYPE_OTHER;
+            }
         }
+        return CommonDataKinds.Email.TYPE_OTHER;
     }
 
 }
