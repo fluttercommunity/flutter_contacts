@@ -22,12 +22,14 @@ Iterable<Contact> contacts = await ContactsService.getContacts();
 
 // Get contacts matching a string
 Iterable<Contact> johns = await ContactsService.getContacts(query : "john");
+
+// Add a contact
+await ContactsService.addContact(newContact)
 ```
 <img src="doc/example.gif" width="300">
 
 
 ## Todo
-- [ ] add contact
 - [ ] delete contact
 - [ ] update contact
 

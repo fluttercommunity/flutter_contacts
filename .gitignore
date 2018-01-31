@@ -7,3 +7,5 @@ build/
 ios/.generated/
 packages
 pubspec.lock
+
+example/ios/Flutter/flutter_assets/snapshot_blob.bin

@@ -8,6 +8,7 @@ public class Contact {
     Contact(String id){
         this.id = id;
     }
+    private Contact(){}
 
     String id;
     String displayName, givenName, middleName, familyName, prefix, suffix, company, jobTitle;
@@ -45,5 +46,36 @@ public class Contact {
         contactMap.put("postalAddresses",addressesMap);
 
         return contactMap;
+    }
+
+    static Contact fromMap(HashMap map){
+        Contact contact = new Contact();
+        contact.givenName = (String)map.get("givenName");
+        contact.middleName = (String)map.get("middleName");
+        contact.familyName = (String)map.get("familyName");
+        contact.prefix = (String)map.get("prefix");
+        contact.suffix = (String)map.get("suffix");
+        contact.company = (String)map.get("company");
+        contact.jobTitle = (String)map.get("jobTitle");
+
+        ArrayList<HashMap> emails = (ArrayList<HashMap>) map.get("emails");
+        if(emails != null){
+            for(HashMap email : emails){
+                contact.emails.add(Item.fromMap(email));
+            }
+        }
+        ArrayList<HashMap> phones = (ArrayList<HashMap>) map.get("phones");
+        if(phones != null) {
+            for (HashMap phone : phones) {
+                contact.emails.add(Item.fromMap(phone));
+            }
+        }
+        ArrayList<HashMap> postalAddresses = (ArrayList<HashMap>) map.get("postalAddresses");
+        if(postalAddresses != null) {
+            for (HashMap postalAddress : postalAddresses) {
+                contact.postalAddresses.add(PostalAddress.fromMap(postalAddress));
+            }
+        }
+        return contact;
     }
 }
