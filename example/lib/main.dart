@@ -49,7 +49,7 @@ class _MyAppState extends State<MyApp> {
             Contact c = _contacts?.elementAt(index);
             return new ListTile(
               onTap: () { Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new _ContactDetails(c)));},
-              leading: new CircleAvatar(child: new Text(c.displayName?.substring(0, 2) ?? "")),
+              leading: new CircleAvatar(child: new Text(c.displayName?.length > 1 ? c.displayName?.substring(0, 2) : "")),
               title: new Text(c.displayName ?? ""),
             );
           },
@@ -147,13 +147,8 @@ class _AddContactPage extends StatefulWidget {
 class _AddContactPageState extends State<_AddContactPage>{
 
   Contact contact = new Contact();
+  PostalAddress address = new PostalAddress(label: "Home");
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-  final PostalAddress address = new PostalAddress(
-    street: "221B Baker Street",
-    city: "London",
-    country: "United Kingdom",
-    postcode: "NW1 6XE",
-  );
 
   @override
   Widget build(BuildContext context) {
@@ -164,6 +159,7 @@ class _AddContactPageState extends State<_AddContactPage>{
           new FlatButton(
             onPressed: (){
               _formKey.currentState.save();
+              contact.postalAddresses = [address];
               ContactsService.addContact(contact);
               Navigator.of(context).pop();
             },
@@ -180,11 +176,25 @@ class _AddContactPageState extends State<_AddContactPage>{
               new TextFormField(decoration: const InputDecoration(labelText: 'First name'), onSaved: (v) => contact.givenName = v),
               new TextFormField(decoration: const InputDecoration(labelText: 'Middle name'), onSaved: (v) => contact.middleName = v),
               new TextFormField(decoration: const InputDecoration(labelText: 'Last name'), onSaved: (v) => contact.familyName = v),
+              new TextFormField(decoration: const InputDecoration(labelText: 'Prefix'), onSaved: (v) => contact.prefix = v),
+              new TextFormField(decoration: const InputDecoration(labelText: 'Suffix'), onSaved: (v) => contact.suffix = v),
+              new TextFormField(decoration: const InputDecoration(labelText: 'Company'), onSaved: (v) => contact.company = v),
+              new TextFormField(decoration: const InputDecoration(labelText: 'Job'), onSaved: (v) => contact.jobTitle = v),
               new TextFormField(
                   decoration: const InputDecoration(labelText: 'E-mail'),
                   onSaved: (v) => contact.emails = [new Item(label: "work", value: v)],
                   keyboardType: TextInputType.emailAddress
               ),
+              new TextFormField(
+                  decoration: const InputDecoration(labelText: 'Phone'),
+                  onSaved: (v) => contact.phones = [new Item(label: "mobile", value: v)],
+                  keyboardType: TextInputType.phone
+              ),
+              new TextFormField(decoration: const InputDecoration(labelText: 'Street'), onSaved: (v) => address.street = v),
+              new TextFormField(decoration: const InputDecoration(labelText: 'City'), onSaved: (v) => address.city = v),
+              new TextFormField(decoration: const InputDecoration(labelText: 'Region'), onSaved: (v) => address.region = v),
+              new TextFormField(decoration: const InputDecoration(labelText: 'Postal code'), onSaved: (v) => address.postcode = v),
+              new TextFormField(decoration: const InputDecoration(labelText: 'Country'), onSaved: (v) => address.country = v),
             ],
           )
         ),
