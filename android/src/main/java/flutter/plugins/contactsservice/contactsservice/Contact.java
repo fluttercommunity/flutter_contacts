@@ -48,6 +48,7 @@ public class Contact {
         return contactMap;
     }
 
+    @SuppressWarnings("unchecked")
     static Contact fromMap(HashMap map){
         Contact contact = new Contact();
         contact.givenName = (String)map.get("givenName");

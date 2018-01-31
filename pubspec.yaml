@@ -4,6 +4,9 @@ version: 0.0.3
 author: Clovis Nicolas <clovisnicolas0@gmail.com>
 homepage: https://github.com/clovisnicolas/flutter_contacts
 
+environment:
+  sdk: ">=1.19.0 <2.0.0"
+
 dependencies:
   flutter:
     sdk: flutter
