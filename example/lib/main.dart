@@ -139,9 +139,21 @@ class ItemsTile extends StatelessWidget{
   }
 }
 
-class _AddContactPage extends StatelessWidget{
+class _AddContactPage extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => new _AddContactPageState();
+}
+
+class _AddContactPageState extends State<_AddContactPage>{
 
   Contact contact = new Contact();
+  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  final PostalAddress address = new PostalAddress(
+    street: "221B Baker Street",
+    city: "London",
+    country: "United Kingdom",
+    postcode: "NW1 6XE",
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -151,6 +163,7 @@ class _AddContactPage extends StatelessWidget{
         actions: <Widget>[
           new FlatButton(
             onPressed: (){
+              _formKey.currentState.save();
               ContactsService.addContact(contact);
               Navigator.of(context).pop();
             },
@@ -161,11 +174,17 @@ class _AddContactPage extends StatelessWidget{
       body: new Container(
         padding: new EdgeInsets.all(12.0),
         child: new Form(
+          key: _formKey,
           child: new ListView(
             children: <Widget>[
-              new TextFormField(decoration: const InputDecoration(labelText: 'First name')),
-              new TextFormField(decoration: const InputDecoration(labelText: 'Middle name')),
-              new TextFormField(decoration: const InputDecoration(labelText: 'Last name')),
+              new TextFormField(decoration: const InputDecoration(labelText: 'First name'), onSaved: (v) => contact.givenName = v),
+              new TextFormField(decoration: const InputDecoration(labelText: 'Middle name'), onSaved: (v) => contact.middleName = v),
+              new TextFormField(decoration: const InputDecoration(labelText: 'Last name'), onSaved: (v) => contact.familyName = v),
+              new TextFormField(
+                  decoration: const InputDecoration(labelText: 'E-mail'),
+                  onSaved: (v) => contact.emails = [new Item(label: "work", value: v)],
+                  keyboardType: TextInputType.emailAddress
+              ),
             ],
           )
         ),

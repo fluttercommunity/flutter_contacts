@@ -22,7 +22,11 @@ class ContactsService {
 
 class Contact{
 
-  Contact();
+  Contact({
+    this.givenName, this.middleName, this.prefix,
+    this.suffix, this.familyName, this.company, this.jobTitle,
+    this.emails, this.phones, this.postalAddresses
+  });
 
   String displayName, givenName, middleName, prefix, suffix, familyName, company, jobTitle;
   Iterable<Item> emails = [];
@@ -44,20 +48,18 @@ class Contact{
   }
 
   static Map _toMap(Contact contact){
-    print("Begin tomap");
-    var emails, phones, postalAddresses = [];
-    for(Item email in contact.emails){
+    var emails = [];
+    for(Item email in contact.emails ?? []){
       emails.add(Item._toMap(email));
     }
-    for(Item phone in contact.phones){
+    var phones = [];
+    for(Item phone in contact.phones ?? []){
       phones.add(Item._toMap(phone));
     }
-    for(PostalAddress address in contact.postalAddresses){
+    var postalAddresses = [];
+    for(PostalAddress address in contact.postalAddresses ?? []){
       postalAddresses.add(PostalAddress._toMap(address));
     }
-    print("Begin returning");
-    print("Name is ${contact.givenName}");
-    print("Last name is ${contact.familyName}");
     return {
       "displayName": contact.displayName,
       "givenName": contact.givenName,
@@ -77,6 +79,7 @@ class Contact{
 
 class PostalAddress{
 
+  PostalAddress({this.label, this.street, this.city, this.postcode, this.region, this.country});
   String label, street, city, postcode, region, country;
 
   PostalAddress.fromMap(Map m){
@@ -96,7 +99,6 @@ class PostalAddress{
     "region": address.region,
     "country": address.country
   };
-
 }
 
 /**
@@ -105,6 +107,7 @@ class PostalAddress{
  */
 class Item{
 
+  Item({this.label, this.value});
   String label, value;
 
   Item.fromMap(Map m){
@@ -113,5 +116,4 @@ class Item{
   }
 
   static Map _toMap(Item i) =>  {"label": i.label, "value": i.value};
-
 }
