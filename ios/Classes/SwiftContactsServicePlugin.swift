@@ -14,6 +14,13 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
         switch call.method {
         case "getContacts":
             result(getContacts(query: (call.arguments as! String?)))
+        case "addContact":
+            if(addContact(dictionary: (call.arguments as! [String : Any]))){
+                result(nil)
+            }
+            else{
+                result(FlutterError(code: "", message: "Failed to add contact", details: nil))
+            }
         default:
             result(FlutterMethodNotImplemented)
         }
@@ -55,6 +62,93 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
             result.append(contactToDictionary(contact: contact))
         }
         return result
+    }
+    
+    func addContact(dictionary : [String:Any]) -> Bool {
+        let contact = dictionaryToContact(dictionary: dictionary)
+        let store = CNContactStore()
+        do{
+            let saveRequest = CNSaveRequest()
+            saveRequest.add(contact, toContainerWithIdentifier: nil)
+            try store.execute(saveRequest)
+        }
+        catch {
+            print(error.localizedDescription)
+            return false
+        }
+        return true
+    }
+    
+    func dictionaryToContact(dictionary : [String:Any]) -> CNMutableContact{
+        let contact = CNMutableContact()
+        
+        //Simple fields
+        if let givenName = dictionary["givenName"] as? String{
+            contact.givenName = givenName
+        }
+        if let familyName = dictionary["familyName"] as? String{
+            contact.familyName = familyName
+        }
+        if let middleName = dictionary["middleName"] as? String{
+            contact.middleName = middleName
+        }
+        if let prefix = dictionary["prefix"] as? String{
+            contact.namePrefix = prefix
+        }
+        if let suffix = dictionary["suffix"] as? String{
+            contact.nameSuffix = suffix
+        }
+        if let company = dictionary["company"] as? String{
+            contact.organizationName = company
+        }
+        if let jobTitle = dictionary["jobTitle"] as? String{
+            contact.jobTitle = jobTitle
+        }
+        
+        //Phone numbers
+        if let phoneNumbers = dictionary["phones"] as? [[String:String]]{
+            for phone in phoneNumbers {
+                if let number = phone["value"]{
+                    contact.phoneNumbers.append(CNLabeledValue(label:getPhoneLabel(label:phone["label"]),value:CNPhoneNumber(stringValue:number)))
+                }
+            }
+        }
+        
+        //Emails
+        if let emails = dictionary["emails"] as? [[String:String]]{
+            for email in emails {
+                if let address = email["value"]{
+                    let emailLabel = email["label"] ?? ""
+                    contact.emailAddresses.append(CNLabeledValue(label:emailLabel, value:address as NSString))
+                }
+            }
+        }
+        
+        //Postal addresses
+        if let postalAddresses = dictionary["postalAddresses"] as? [[String:String]]{
+            for postalAddress in postalAddresses{
+                let newAddress = CNMutablePostalAddress()
+                if let street = postalAddress["street"]{
+                    newAddress.street = street
+                }
+                if let city = postalAddress["city"]{
+                    newAddress.city = city
+                }
+                if let postcode = postalAddress["postcode"]{
+                    newAddress.postalCode = postcode
+                }
+                if let country = postalAddress["country"]{
+                    newAddress.country = country
+                }
+                if let region = postalAddress["region"]{
+                    newAddress.state = region
+                }
+                let label = postalAddress["label"] ?? ""
+                contact.postalAddresses.append(CNLabeledValue(label:label, value:newAddress))
+            }
+        }
+        
+        return contact
     }
     
     func contactToDictionary(contact: CNContact) -> [String:Any]{
@@ -116,6 +210,18 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
         result["postalAddresses"] = postalAddresses
         
         return result
+    }
+    
+    func getPhoneLabel(label: String?) -> String{
+        if let label = label{
+            switch(label){
+            case "main": return CNLabelPhoneNumberMain
+            case "mobile": return CNLabelPhoneNumberMobile
+            case "iPhone": return CNLabelPhoneNumberiPhone
+            default: return label
+            }
+        }
+        return ""
     }
     
 }
