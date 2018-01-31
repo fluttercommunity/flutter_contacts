@@ -11,7 +11,12 @@ Make sure you add the following permissions to your Android Manifest
 ```
 <uses-permission android:name="android.permission.READ_CONTACTS" />
 <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+```
 
+On iOS, make sure to set *NSContactsUsageDescription* in your Info.plist
+```
+<key>NSContactsUsageDescription</key>
+<string>This app requires contacts access to function properly.</string>
 ```
 
 ## Example
