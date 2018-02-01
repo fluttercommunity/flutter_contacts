@@ -15,11 +15,19 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
         case "getContacts":
             result(getContacts(query: (call.arguments as! String?)))
         case "addContact":
-            if(addContact(dictionary: (call.arguments as! [String : Any]))){
+            let contact = dictionaryToContact(dictionary: call.arguments as! [String : Any])
+            if(addContact(contact: contact)){
                 result(nil)
             }
             else{
                 result(FlutterError(code: "", message: "Failed to add contact", details: nil))
+            }
+        case "deleteContact":
+            if(deleteContact(dictionary: call.arguments as! [String : Any])){
+                result(nil)
+            }
+            else{
+                result(FlutterError(code: "", message: "Failed to delete contact, make sure it has a valid identifier", details: nil))
             }
         default:
             result(FlutterMethodNotImplemented)
@@ -64,8 +72,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
         return result
     }
     
-    func addContact(dictionary : [String:Any]) -> Bool {
-        let contact = dictionaryToContact(dictionary: dictionary)
+    func addContact(contact : CNMutableContact) -> Bool {
         let store = CNContactStore()
         do{
             let saveRequest = CNSaveRequest()
@@ -77,6 +84,26 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
             return false
         }
         return true
+    }
+    
+    func deleteContact(dictionary : [String:Any]) -> Bool{
+        guard let identifier = dictionary["identifier"] as? String else{
+            return false;
+        }
+        let store = CNContactStore()
+        let keys = [CNContactIdentifierKey as NSString]
+        do{
+            if let contact = try store.unifiedContact(withIdentifier: identifier, keysToFetch: keys).mutableCopy() as? CNMutableContact{
+                let request = CNSaveRequest()
+                request.delete(contact)
+                try store.execute(request)
+            }
+        }
+        catch{
+            print(error.localizedDescription)
+            return false;
+        }
+        return true;
     }
     
     func dictionaryToContact(dictionary : [String:Any]) -> CNMutableContact{
@@ -128,6 +155,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
         var result = [String:Any]()
         
         //Simple fields
+        result["identifier"] = contact.identifier
         result["displayName"] = CNContactFormatter.string(from: contact, style: CNContactFormatterStyle.fullName)
         result["givenName"] = contact.givenName
         result["familyName"] = contact.familyName
