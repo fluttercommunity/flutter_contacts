@@ -67,7 +67,10 @@ class _ContactDetails extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-        appBar: new AppBar(title: new Text(_contact.displayName ?? "")),
+        appBar: new AppBar(
+          title: new Text(_contact.displayName ?? ""),
+          actions: <Widget>[new FlatButton(child:new Icon(Icons.delete), onPressed: (){ContactsService.deleteContact(_contact);})]
+        ),
         body: new SafeArea(
           child: new ListView(
             children: <Widget>[

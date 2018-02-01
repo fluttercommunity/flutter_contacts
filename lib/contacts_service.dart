@@ -18,6 +18,11 @@ class ContactsService {
    * Adds the [contact] to the device contact list
    */
   static Future addContact(Contact contact) => _channel.invokeMethod('addContact', Contact._toMap(contact));
+
+  /**
+   * Deletes the [contact] if it has a valid identifier
+   */
+  static Future deleteContact(Contact contact) => _channel.invokeMethod('deleteContact', Contact._toMap(contact));
 }
 
 class Contact{
@@ -28,12 +33,13 @@ class Contact{
     this.emails, this.phones, this.postalAddresses
   });
 
-  String displayName, givenName, middleName, prefix, suffix, familyName, company, jobTitle;
+  String identifier, displayName, givenName, middleName, prefix, suffix, familyName, company, jobTitle;
   Iterable<Item> emails = [];
   Iterable<Item> phones = [];
   Iterable<PostalAddress> postalAddresses = [];
 
   Contact.fromMap(Map m){
+    identifier = m["identifier"];
     displayName = m["displayName"];
     givenName = m["givenName"];
     middleName = m["middleName"];
@@ -61,6 +67,7 @@ class Contact{
       postalAddresses.add(PostalAddress._toMap(address));
     }
     return {
+      "identifier": contact.identifier,
       "displayName": contact.displayName,
       "givenName": contact.givenName,
       "middleName": contact.middleName,
