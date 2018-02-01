@@ -83,44 +83,26 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
         let contact = CNMutableContact()
         
         //Simple fields
-        if let givenName = dictionary["givenName"] as? String{
-            contact.givenName = givenName
-        }
-        if let familyName = dictionary["familyName"] as? String{
-            contact.familyName = familyName
-        }
-        if let middleName = dictionary["middleName"] as? String{
-            contact.middleName = middleName
-        }
-        if let prefix = dictionary["prefix"] as? String{
-            contact.namePrefix = prefix
-        }
-        if let suffix = dictionary["suffix"] as? String{
-            contact.nameSuffix = suffix
-        }
-        if let company = dictionary["company"] as? String{
-            contact.organizationName = company
-        }
-        if let jobTitle = dictionary["jobTitle"] as? String{
-            contact.jobTitle = jobTitle
-        }
+        contact.givenName = dictionary["givenName"] as? String ?? ""
+        contact.familyName = dictionary["familyName"] as? String ?? ""
+        contact.middleName = dictionary["middleName"] as? String ?? ""
+        contact.namePrefix = dictionary["prefix"] as? String ?? ""
+        contact.nameSuffix = dictionary["suffix"] as? String ?? ""
+        contact.organizationName = dictionary["company"] as? String ?? ""
+        contact.jobTitle = dictionary["jobTitle"] as? String ?? ""
         
         //Phone numbers
         if let phoneNumbers = dictionary["phones"] as? [[String:String]]{
-            for phone in phoneNumbers {
-                if let number = phone["value"]{
-                    contact.phoneNumbers.append(CNLabeledValue(label:getPhoneLabel(label:phone["label"]),value:CNPhoneNumber(stringValue:number)))
-                }
+            for phone in phoneNumbers where phone["value"] != nil {
+                contact.phoneNumbers.append(CNLabeledValue(label:getPhoneLabel(label:phone["label"]),value:CNPhoneNumber(stringValue:phone["value"]!)))
             }
         }
         
         //Emails
         if let emails = dictionary["emails"] as? [[String:String]]{
-            for email in emails {
-                if let address = email["value"]{
-                    let emailLabel = email["label"] ?? ""
-                    contact.emailAddresses.append(CNLabeledValue(label:emailLabel, value:address as NSString))
-                }
+            for email in emails where nil != email["value"] {
+                let emailLabel = email["label"] ?? ""
+                contact.emailAddresses.append(CNLabeledValue(label:emailLabel, value:email["value"]! as NSString))
             }
         }
         
@@ -128,21 +110,11 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
         if let postalAddresses = dictionary["postalAddresses"] as? [[String:String]]{
             for postalAddress in postalAddresses{
                 let newAddress = CNMutablePostalAddress()
-                if let street = postalAddress["street"]{
-                    newAddress.street = street
-                }
-                if let city = postalAddress["city"]{
-                    newAddress.city = city
-                }
-                if let postcode = postalAddress["postcode"]{
-                    newAddress.postalCode = postcode
-                }
-                if let country = postalAddress["country"]{
-                    newAddress.country = country
-                }
-                if let region = postalAddress["region"]{
-                    newAddress.state = region
-                }
+                newAddress.street = postalAddress["street"] ?? ""
+                newAddress.city = postalAddress["city"] ?? ""
+                newAddress.postalCode = postalAddress["postcode"] ?? ""
+                newAddress.country = postalAddress["country"] ?? ""
+                newAddress.state = postalAddress["region"] ?? ""
                 let label = postalAddress["label"] ?? ""
                 contact.postalAddresses.append(CNLabeledValue(label:label, value:newAddress))
             }
@@ -213,15 +185,13 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
     }
     
     func getPhoneLabel(label: String?) -> String{
-        if let label = label{
-            switch(label){
-            case "main": return CNLabelPhoneNumberMain
-            case "mobile": return CNLabelPhoneNumberMobile
-            case "iPhone": return CNLabelPhoneNumberiPhone
-            default: return label
-            }
+        let labelValue = label ?? ""
+        switch(labelValue){
+        case "main": return CNLabelPhoneNumberMain
+        case "mobile": return CNLabelPhoneNumberMobile
+        case "iPhone": return CNLabelPhoneNumberiPhone
+        default: return labelValue
         }
-        return ""
     }
     
 }
