@@ -31,13 +31,16 @@ Iterable<Contact> contacts = await ContactsService.getContacts();
 Iterable<Contact> johns = await ContactsService.getContacts(query : "john");
 
 // Add a contact
-await ContactsService.addContact(newContact)
+await ContactsService.addContact(newContact);
+
+//Delete a contact
+await ContactsService.deleteContact(contact);
+
 ```
 <img src="doc/example.gif" width="300">
 
 
 ## Todo
-- [ ] delete contact
 - [ ] update contact
 
 ## Credits

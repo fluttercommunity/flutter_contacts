@@ -6,11 +6,11 @@ import java.util.HashMap;
 public class Contact {
 
     Contact(String id){
-        this.id = id;
+        this.identifier = id;
     }
     private Contact(){}
 
-    String id;
+    String identifier;
     String displayName, givenName, middleName, familyName, prefix, suffix, company, jobTitle;
     ArrayList<Item> emails = new ArrayList<>();
     ArrayList<Item> phones = new ArrayList<>();
@@ -18,6 +18,7 @@ public class Contact {
 
     HashMap<String,Object> toMap(){
         HashMap<String,Object> contactMap = new HashMap<>();
+        contactMap.put("identifier", identifier);
         contactMap.put("displayName",displayName);
         contactMap.put("givenName",givenName);
         contactMap.put("middleName",middleName);
@@ -51,6 +52,7 @@ public class Contact {
     @SuppressWarnings("unchecked")
     static Contact fromMap(HashMap map){
         Contact contact = new Contact();
+        contact.identifier = (String)map.get("identifier");
         contact.givenName = (String)map.get("givenName");
         contact.middleName = (String)map.get("middleName");
         contact.familyName = (String)map.get("familyName");

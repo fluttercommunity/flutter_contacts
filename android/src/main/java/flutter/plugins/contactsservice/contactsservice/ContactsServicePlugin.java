@@ -9,8 +9,10 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 import android.annotation.TargetApi;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
+import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.os.Build;
+import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
 
@@ -52,6 +54,14 @@ public class ContactsServicePlugin implements MethodCallHandler {
           result.success(null);
         } else{
           result.error(null, "Failed to add the contact", null);
+        }
+        break;
+      case "deleteContact":
+        Contact ct = Contact.fromMap((HashMap)call.arguments);
+        if(this.deleteContact(ct)){
+          result.success(null);
+        } else{
+          result.error(null, "Failed to delete the contact, make sure it has a valid identifier", null);
         }
         break;
       default:
@@ -238,4 +248,18 @@ public class ContactsServicePlugin implements MethodCallHandler {
       return false;
     }
   }
+
+  private boolean deleteContact(Contact contact){
+    ArrayList<ContentProviderOperation> ops = new ArrayList<>();
+    ops.add(ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI)
+            .withSelection(ContactsContract.Data.CONTACT_ID + "=?", new String[]{String.valueOf(contact.identifier)})
+            .build());
+    try {
+      contentResolver.applyBatch(ContactsContract.AUTHORITY, ops);
+      return true;
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
 }
