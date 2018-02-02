@@ -42,6 +42,14 @@ await ContactsService.deleteContact(contact);
 
 ## Todo
 - [ ] update contact
+- [ ] get contact thumbnail
+
+
+## Contributions
+
+Contributions are welcome! If you find a bug or want a feature, please fill an issue.
+
+If you want to contribute code please create a pull request.
 
 ## Credits
 
