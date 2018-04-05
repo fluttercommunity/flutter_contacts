@@ -1,3 +1,7 @@
+## [0.0.5] - April 5th, 2018
+
+* Fix with dart2 compatibility
+
 ## [0.0.4] - February 1st, 2018.
 
 * Implement deleteContact(Contact c) for Android and iOS
