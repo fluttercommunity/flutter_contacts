@@ -10,7 +10,7 @@ class ContactsService {
    * the contacts with a name matching [query]
    */
   static Future<Iterable<Contact>> getContacts({String query}) async{
-    Iterable<Map> contacts = await _channel.invokeMethod('getContacts', query);
+    Iterable contacts = await _channel.invokeMethod('getContacts', query);
     return contacts.map((m) => new Contact.fromMap(m));
   }
 
@@ -48,9 +48,9 @@ class Contact{
     suffix = m["suffix"];
     company = m["company"];
     jobTitle = m["jobTitle"];
-    emails = (m["emails"] as Iterable<Map>)?.map((m) => new Item.fromMap(m));
-    phones = (m["phones"] as Iterable<Map>)?.map((m) => new Item.fromMap(m));
-    postalAddresses = (m["postalAddresses"] as Iterable<Map>)?.map((m) => new PostalAddress.fromMap(m));
+    emails = (m["emails"] as Iterable)?.map((m) => new Item.fromMap(m));
+    phones = (m["phones"] as Iterable)?.map((m) => new Item.fromMap(m));
+    postalAddresses = (m["postalAddresses"] as Iterable)?.map((m) => new PostalAddress.fromMap(m));
   }
 
   static Map _toMap(Contact contact){
