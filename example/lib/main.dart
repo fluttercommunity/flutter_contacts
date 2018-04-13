@@ -43,17 +43,21 @@ class _MyAppState extends State<MyApp> {
         onPressed: (){Navigator.of(context).pushNamed("/add");}
       ),
       body: new SafeArea(
-        child: new ListView.builder(
-          itemCount: _contacts?.length ?? 0,
-          itemBuilder: (BuildContext context, int index) {
-            Contact c = _contacts?.elementAt(index);
-            return new ListTile(
-              onTap: () { Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new _ContactDetails(c)));},
-              leading: new CircleAvatar(child: new Text(c.displayName?.length > 1 ? c.displayName?.substring(0, 2) : "")),
-              title: new Text(c.displayName ?? ""),
-            );
-          },
-        ),
+        child: _contacts != null?
+          new ListView.builder(
+            itemCount: _contacts?.length ?? 0,
+            itemBuilder: (BuildContext context, int index) {
+              Contact c = _contacts?.elementAt(index);
+              return new ListTile(
+                onTap: () { Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new _ContactDetails(c)));},
+                leading: c.avatar.length > 0?
+                new CircleAvatar(backgroundImage: new MemoryImage(c.avatar)):
+                new CircleAvatar(child:  new Text(c.displayName?.length > 1 ? c.displayName?.substring(0, 2) : "")),
+                title: new Text(c.displayName ?? ""),
+              );
+            },
+          ):
+          new Center(child: new CircularProgressIndicator()),
       ),
     );
   }
