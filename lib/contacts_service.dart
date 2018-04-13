@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'dart:typed_data';
 import 'package:flutter/services.dart';
 
 class ContactsService {
@@ -10,7 +10,7 @@ class ContactsService {
    * the contacts with a name matching [query]
    */
   static Future<Iterable<Contact>> getContacts({String query}) async{
-    Iterable<Map> contacts = await _channel.invokeMethod('getContacts', query);
+    Iterable contacts = await _channel.invokeMethod('getContacts', query);
     return contacts.map((m) => new Contact.fromMap(m));
   }
 
@@ -30,13 +30,14 @@ class Contact{
   Contact({
     this.givenName, this.middleName, this.prefix,
     this.suffix, this.familyName, this.company, this.jobTitle,
-    this.emails, this.phones, this.postalAddresses
+    this.emails, this.phones, this.postalAddresses, this.avatar
   });
 
   String identifier, displayName, givenName, middleName, prefix, suffix, familyName, company, jobTitle;
   Iterable<Item> emails = [];
   Iterable<Item> phones = [];
   Iterable<PostalAddress> postalAddresses = [];
+  Uint8List avatar;
 
   Contact.fromMap(Map m){
     identifier = m["identifier"];
@@ -48,9 +49,10 @@ class Contact{
     suffix = m["suffix"];
     company = m["company"];
     jobTitle = m["jobTitle"];
-    emails = (m["emails"] as Iterable<Map>)?.map((m) => new Item.fromMap(m));
-    phones = (m["phones"] as Iterable<Map>)?.map((m) => new Item.fromMap(m));
-    postalAddresses = (m["postalAddresses"] as Iterable<Map>)?.map((m) => new PostalAddress.fromMap(m));
+    emails = (m["emails"] as Iterable)?.map((m) => new Item.fromMap(m));
+    phones = (m["phones"] as Iterable)?.map((m) => new Item.fromMap(m));
+    postalAddresses = (m["postalAddresses"] as Iterable)?.map((m) => new PostalAddress.fromMap(m));
+    avatar = m["avatar"];
   }
 
   static Map _toMap(Contact contact){
@@ -78,7 +80,8 @@ class Contact{
       "jobTitle": contact.jobTitle,
       "emails" : emails,
       "phones" : phones,
-      "postalAddresses" : postalAddresses
+      "postalAddresses" : postalAddresses,
+      "avatar": contact.avatar
     };
   }
 

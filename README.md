@@ -31,6 +31,7 @@ Iterable<Contact> contacts = await ContactsService.getContacts();
 Iterable<Contact> johns = await ContactsService.getContacts(query : "john");
 
 // Add a contact
+// The contact must have a firstName / lastName to be successfully addded
 await ContactsService.addContact(newContact);
 
 //Delete a contact
@@ -42,6 +43,14 @@ await ContactsService.deleteContact(contact);
 
 ## Todo
 - [ ] update contact
+- [ ] get contact thumbnail
+
+
+## Contributions
+
+Contributions are welcome! If you find a bug or want a feature, please fill an issue.
+
+If you want to contribute code please create a pull request.
 
 ## Credits
 

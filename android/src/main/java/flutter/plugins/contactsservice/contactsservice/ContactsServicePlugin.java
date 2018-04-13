@@ -9,8 +9,11 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 import android.annotation.TargetApi;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
@@ -36,6 +39,8 @@ public class ContactsServicePlugin implements MethodCallHandler {
 
   private final ContentResolver contentResolver;
 
+  private Result getContactResult;
+
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), "github.com/clovisnicolas/flutter_contacts");
     channel.setMethodCallHandler(new ContactsServicePlugin(registrar.context().getContentResolver()));
@@ -43,10 +48,10 @@ public class ContactsServicePlugin implements MethodCallHandler {
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
-
     switch(call.method){
       case "getContacts":
-        result.success(this.getContacts((String)call.arguments));
+        getContactResult = result;
+        this.getContacts((String)call.arguments);
         break;
       case "addContact":
         Contact c = Contact.fromMap((HashMap)call.arguments);
@@ -103,14 +108,31 @@ public class ContactsServicePlugin implements MethodCallHandler {
 
 
   @TargetApi(Build.VERSION_CODES.ECLAIR)
-  private ArrayList getContacts(String query) {
-    ArrayList<Contact> contacts = getContactsFrom(getCursor(query));
-    //Transform the list of contacts to a list of Map
-    ArrayList<HashMap> contactMaps = new ArrayList<>();
-    for(Contact c : contacts){
-      contactMaps.add(c.toMap());
+  private void getContacts(String query) {
+    new GetContactsTask().execute(new String[] {query});
+  }
+
+  @TargetApi(Build.VERSION_CODES.CUPCAKE)
+  private class GetContactsTask extends AsyncTask<String, Void, ArrayList<HashMap>> {
+
+    @TargetApi(Build.VERSION_CODES.ECLAIR)
+    protected ArrayList<HashMap> doInBackground(String... query) {
+      ArrayList<Contact> contacts = getContactsFrom(getCursor(query[0]));
+      for(Contact c : contacts){
+        setAvatarDataForContactIfAvailable(c);
+      }
+      //Transform the list of contacts to a list of Map
+      ArrayList<HashMap> contactMaps = new ArrayList<>();
+      for(Contact c : contacts){
+        contactMaps.add(c.toMap());
+      }
+
+      return contactMaps;
     }
-    return contactMaps;
+
+    protected void onPostExecute(ArrayList<HashMap> result) {
+      getContactResult.success(result);
+    }
   }
 
   private Cursor getCursor(String query){
@@ -178,6 +200,20 @@ public class ContactsServicePlugin implements MethodCallHandler {
       }
     }
     return new ArrayList<>(map.values());
+  }
+
+  private void setAvatarDataForContactIfAvailable(Contact contact) {
+    Uri contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Integer.parseInt(contact.identifier));
+    Uri photoUri = Uri.withAppendedPath(contactUri, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY);
+    Cursor avatarCursor = contentResolver.query(photoUri,
+            new String[] {ContactsContract.Contacts.Photo.PHOTO}, null, null, null);
+    if (avatarCursor != null && avatarCursor.moveToFirst()) {
+      byte[] avatar = avatarCursor.getBlob(0);
+      contact.avatar = avatar;
+    }
+    if (avatarCursor != null) {
+      avatarCursor.close();
+    }
   }
 
   private boolean addContact(Contact contact){
