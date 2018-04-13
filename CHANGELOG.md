@@ -1,3 +1,7 @@
+## [0.0.6] - April 13th, 2018
+
+* Add contact thumbnails
+
 ## [0.0.5] - April 5th, 2018
 
 * Fix with dart2 compatibility

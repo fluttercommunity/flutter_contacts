@@ -43,7 +43,7 @@ await ContactsService.deleteContact(contact);
 
 ## Todo
 - [ ] update contact
-- [ ] get contact thumbnail
+- [ ] add withTumbnails optional parameter in getContacts method
 
 
 ## Contributions

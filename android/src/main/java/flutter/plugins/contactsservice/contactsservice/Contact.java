@@ -15,6 +15,7 @@ public class Contact {
     ArrayList<Item> emails = new ArrayList<>();
     ArrayList<Item> phones = new ArrayList<>();
     ArrayList<PostalAddress> postalAddresses = new ArrayList<>();
+    byte[] avatar = new byte[0];
 
     HashMap<String,Object> toMap(){
         HashMap<String,Object> contactMap = new HashMap<>();
@@ -27,6 +28,7 @@ public class Contact {
         contactMap.put("suffix", suffix);
         contactMap.put("company",company);
         contactMap.put("jobTitle",jobTitle);
+        contactMap.put("avatar",avatar);
 
         ArrayList<HashMap<String,String>> emailsMap = new ArrayList<>();
         for(Item email : emails){
@@ -60,6 +62,7 @@ public class Contact {
         contact.suffix = (String)map.get("suffix");
         contact.company = (String)map.get("company");
         contact.jobTitle = (String)map.get("jobTitle");
+        contact.avatar = (byte[]) map.get("avatar");
 
         ArrayList<HashMap> emails = (ArrayList<HashMap>) map.get("emails");
         if(emails != null){
