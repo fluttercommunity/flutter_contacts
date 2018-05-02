@@ -19,6 +19,8 @@ On iOS, make sure to set *NSContactsUsageDescription* in your Info.plist
 <string>This app requires contacts access to function properly.</string>
 ```
 
+To check and request user permission to access contacts, I recommend using the following plugin : [flutter_simple_permissions](https://github.com/AppleEducate/flutter_simple_permissions)
+
 ## Example
 ``` dart
 // Import package
