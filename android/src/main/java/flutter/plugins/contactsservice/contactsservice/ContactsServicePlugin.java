@@ -131,7 +131,11 @@ public class ContactsServicePlugin implements MethodCallHandler {
     }
 
     protected void onPostExecute(ArrayList<HashMap> result) {
-      getContactResult.success(result);
+      try{
+        getContactResult.success(result);
+      } catch(IllegalStateException e){
+        e.printStackTrace();
+      }
     }
   }
 
