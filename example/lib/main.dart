@@ -127,8 +127,8 @@ class _AddressesTile extends StatelessWidget{
 class ItemsTile extends StatelessWidget{
 
   ItemsTile(this._title, this._items);
-  Iterable<Item> _items;
-  String _title;
+  final Iterable<Item> _items;
+  final String _title;
 
   @override
   Widget build(BuildContext context) {
