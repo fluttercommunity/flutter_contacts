@@ -3,25 +3,28 @@
 [![pub package](https://img.shields.io/pub/v/contacts_service.svg)](https://pub.dartlang.org/packages/contacts_service)
 A Flutter plugin to access and manage the device's contacts.
 
-
 ## Usage
-To use this plugin, add `contacts_service` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
 
-Make sure you add the following permissions to your Android Manifest
-```
+To use this plugin, add `contacts_service` as a [dependency in your `pubspec.yaml` file](https://flutter.io/platform-plugins/).
+
+Make sure you add the following permissions to your Android Manifest:
+
+```xml
 <uses-permission android:name="android.permission.READ_CONTACTS" />
 <uses-permission android:name="android.permission.WRITE_CONTACTS" />
 ```
 
-On iOS, make sure to set *NSContactsUsageDescription* in your Info.plist
-```
+On iOS, make sure to set `NSContactsUsageDescription` in the `Info.plist` file
+
+```xml
 <key>NSContactsUsageDescription</key>
 <string>This app requires contacts access to function properly.</string>
 ```
 
-To check and request user permission to access contacts, I recommend using the following plugin : [flutter_simple_permissions](https://github.com/AppleEducate/flutter_simple_permissions)
+To check and request user permission to access contacts, I recommend using the following plugin: [flutter_simple_permissions](https://github.com/AppleEducate/flutter_simple_permissions)
 
 ## Example
+
 ``` dart
 // Import package
 import 'package:contacts_service/contacts_service.dart';
@@ -40,13 +43,13 @@ await ContactsService.addContact(newContact);
 await ContactsService.deleteContact(contact);
 
 ```
-<img src="doc/example.gif" width="300">
 
+![Example](doc/example.gif "Example screenshot")
 
 ## Todo
-- [ ] update contact
-- [ ] add withTumbnails optional parameter in getContacts method
 
+- [ ] update contact
+- [ ] add withThumbnails optional parameter in getContacts method
 
 ## Contributions
 
