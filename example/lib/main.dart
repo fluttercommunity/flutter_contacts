@@ -23,10 +23,10 @@ class _MyAppState extends State<MyApp> {
   @override
   initState() {
     super.initState();
-    initPlatformState();
+    refreshContacts();
   }
 
-  initPlatformState() async {
+  refreshContacts() async {
     var contacts = await ContactsService.getContacts();
     setState(() {
       _contacts = contacts;
@@ -36,11 +36,13 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Contacts plugin example')),
+      appBar: AppBar(title: Text('Contacts Plugin Example')),
       floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
           onPressed: () {
-            Navigator.of(context).pushNamed("/add");
+            Navigator.of(context).pushNamed("/add").then((_) {
+              refreshContacts();
+            });
           }),
       body: SafeArea(
         child: _contacts != null
