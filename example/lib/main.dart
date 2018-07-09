@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:contacts_service/contacts_service.dart';
 
-void main() => runApp(DemoApp());
+void main() => runApp(ContactsExampleApp());
 
-class DemoApp extends StatelessWidget {
+class ContactsExampleApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(routes: <String, WidgetBuilder>{
-      '/add': (BuildContext context) => _AddContactPage()
-    }, home: MyApp());
+      '/add': (BuildContext context) => AddContactPage()
+    }, home: ContactListPage());
   }
 }
 
-class MyApp extends StatefulWidget {
+class ContactListPage extends StatefulWidget {
   @override
-  _MyAppState createState() => _MyAppState();
+  _ContactListPageState createState() => _ContactListPageState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _ContactListPageState extends State<ContactListPage> {
   Iterable<Contact> _contacts;
 
   @override
@@ -54,7 +54,7 @@ class _MyAppState extends State<MyApp> {
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (BuildContext context) =>
-                              _ContactDetails(c)));
+                              ContactDetailsPage(c)));
                     },
                     leading: (c.avatar != null && c.avatar.length > 0)
                         ? CircleAvatar(backgroundImage: MemoryImage(c.avatar))
@@ -72,8 +72,8 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-class _ContactDetails extends StatelessWidget {
-  _ContactDetails(this._contact);
+class ContactDetailsPage extends StatelessWidget {
+  ContactDetailsPage(this._contact);
   final Contact _contact;
 
   @override
@@ -108,7 +108,7 @@ class _ContactDetails extends StatelessWidget {
                   trailing: Text(_contact.company ?? "")),
               ListTile(
                   title: Text("Job"), trailing: Text(_contact.jobTitle ?? "")),
-              _AddressesTile(_contact.postalAddresses),
+              AddressesTile(_contact.postalAddresses),
               ItemsTile("Phones", _contact.phones),
               ItemsTile("Emails", _contact.emails)
             ],
@@ -117,8 +117,8 @@ class _ContactDetails extends StatelessWidget {
   }
 }
 
-class _AddressesTile extends StatelessWidget {
-  _AddressesTile(this._addresses);
+class AddressesTile extends StatelessWidget {
+  AddressesTile(this._addresses);
   final Iterable<PostalAddress> _addresses;
 
   Widget build(BuildContext context) {
@@ -177,12 +177,12 @@ class ItemsTile extends StatelessWidget {
   }
 }
 
-class _AddContactPage extends StatefulWidget {
+class AddContactPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _AddContactPageState();
 }
 
-class _AddContactPageState extends State<_AddContactPage> {
+class _AddContactPageState extends State<AddContactPage> {
   Contact contact = Contact();
   PostalAddress address = PostalAddress(label: "Home");
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
