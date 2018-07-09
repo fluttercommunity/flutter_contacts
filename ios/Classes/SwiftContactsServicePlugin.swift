@@ -102,7 +102,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
             }
         }
         catch{
-            NSLog(error.localizedDescription)
+            print(error.localizedDescription)
             return false;
         }
         return true;
