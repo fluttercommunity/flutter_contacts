@@ -118,7 +118,9 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
         contact.nameSuffix = dictionary["suffix"] as? String ?? ""
         contact.organizationName = dictionary["company"] as? String ?? ""
         contact.jobTitle = dictionary["jobTitle"] as? String ?? ""
-        contact.imageData = (dictionary["avatar"] as? FlutterStandardTypedData)?.data ?? Data()
+        if let avatarData = (dictionary["avatar"] as? FlutterStandardTypedData)?.data {
+            contact.imageData = avatarData
+        }
         
         //Phone numbers
         if let phoneNumbers = dictionary["phones"] as? [[String:String]]{
