@@ -16,11 +16,13 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
             result(getContacts(query: (call.arguments as! String?)))
         case "addContact":
             let contact = dictionaryToContact(dictionary: call.arguments as! [String : Any])
-            if(addContact(contact: contact)){
+
+            let addResult = addContact(contact: contact)
+            if (addResult == "") {
                 result(nil)
             }
-            else{
-                result(FlutterError(code: "", message: "Failed to add contact", details: nil))
+            else {
+                result(FlutterError(code: "", message: addResult, details: nil))
             }
         case "deleteContact":
             if(deleteContact(dictionary: call.arguments as! [String : Any])){
@@ -73,18 +75,17 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
         return result
     }
     
-    func addContact(contact : CNMutableContact) -> Bool {
+    func addContact(contact : CNMutableContact) -> String {
         let store = CNContactStore()
-        do{
+        do {
             let saveRequest = CNSaveRequest()
             saveRequest.add(contact, toContainerWithIdentifier: nil)
             try store.execute(saveRequest)
         }
         catch {
-            print(error.localizedDescription)
-            return false
+            return error.localizedDescription
         }
-        return true
+        return ""
     }
     
     func deleteContact(dictionary : [String:Any]) -> Bool{
@@ -101,7 +102,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
             }
         }
         catch{
-            print(error.localizedDescription)
+            NSLog(error.localizedDescription)
             return false;
         }
         return true;
@@ -109,7 +110,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
     
     func dictionaryToContact(dictionary : [String:Any]) -> CNMutableContact{
         let contact = CNMutableContact()
-        
+
         //Simple fields
         contact.givenName = dictionary["givenName"] as? String ?? ""
         contact.familyName = dictionary["familyName"] as? String ?? ""
@@ -121,14 +122,14 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
         if let avatarData = (dictionary["avatar"] as? FlutterStandardTypedData)?.data {
             contact.imageData = avatarData
         }
-        
+
         //Phone numbers
         if let phoneNumbers = dictionary["phones"] as? [[String:String]]{
             for phone in phoneNumbers where phone["value"] != nil {
                 contact.phoneNumbers.append(CNLabeledValue(label:getPhoneLabel(label:phone["label"]),value:CNPhoneNumber(stringValue:phone["value"]!)))
             }
         }
-        
+
         //Emails
         if let emails = dictionary["emails"] as? [[String:String]]{
             for email in emails where nil != email["value"] {
@@ -136,7 +137,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
                 contact.emailAddresses.append(CNLabeledValue(label:emailLabel, value:email["value"]! as NSString))
             }
         }
-        
+
         //Postal addresses
         if let postalAddresses = dictionary["postalAddresses"] as? [[String:String]]{
             for postalAddress in postalAddresses{
@@ -150,7 +151,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
                 contact.postalAddresses.append(CNLabeledValue(label:label, value:newAddress))
             }
         }
-        
+
         return contact
     }
     
