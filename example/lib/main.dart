@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:contacts_service/contacts_service.dart';
 
-void main() => runApp(DemoApp());
+void main() => runApp(ContactsExampleApp());
 
-class DemoApp extends StatelessWidget {
+class ContactsExampleApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(routes: <String, WidgetBuilder>{
       '/add': (BuildContext context) => _AddContactPage()
-    }, home: MyApp());
+    }, home: ContactListPage());
   }
 }
 
-class MyApp extends StatefulWidget {
+class ContactListPage extends StatefulWidget {
   @override
-  _MyAppState createState() => _MyAppState();
+  _ContactListPageState createState() => _ContactListPageState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _ContactListPageState extends State<ContactListPage> {
   Iterable<Contact> _contacts;
 
   @override
