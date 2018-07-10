@@ -1,3 +1,10 @@
+## [0.0.7] - July 10th, 2018
+
+* Fix PlatformException on iOS
+* Add a refresh to the contacts list in the sample app when you add a contact
+* Return more meaningful errors when addContact() fails on iOS
+* Code tidy up
+
 ## [0.0.6] - April 13th, 2018
 
 * Add contact thumbnails
