@@ -1,3 +1,7 @@
+## [0.0.8] - August 16th, 2018
+* Fix an issue with phones being added to emails on Android
+* Update plugin for dart 2
+
 ## [0.0.7] - July 10th, 2018
 
 * Fix PlatformException on iOS

@@ -73,7 +73,7 @@ public class Contact {
         ArrayList<HashMap> phones = (ArrayList<HashMap>) map.get("phones");
         if(phones != null) {
             for (HashMap phone : phones) {
-                contact.emails.add(Item.fromMap(phone));
+                contact.phones.add(Item.fromMap(phone));
             }
         }
         ArrayList<HashMap> postalAddresses = (ArrayList<HashMap>) map.get("postalAddresses");
