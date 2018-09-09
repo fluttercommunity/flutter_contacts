@@ -97,6 +97,10 @@ class Contact {
       "avatar": contact.avatar
     };
   }
+
+  Map toMap(){
+    return Contact._toMap(this);
+  }
 }
 
 class PostalAddress {
