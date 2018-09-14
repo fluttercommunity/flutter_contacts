@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/services.dart';
+import 'package:meta/meta.dart';
 
 class ContactsService {
   static const MethodChannel _channel =
@@ -98,9 +100,171 @@ class Contact {
     };
   }
 
-  Map toMap(){
+  Map toMap() {
     return Contact._toMap(this);
   }
+
+  /// Updates this [Contact] with data from [contact].
+  void mergeWith(Contact contact) {}
+
+  /// "Adding" two contacts together is basically applying the data
+  /// from the missing field.
+  /// If you would like to merge the contacts, use the [merge] function.
+  operator +(Contact contact) =>
+      Contact(
+          givenName: this.givenName ?? contact.givenName,
+          middleName: this.middleName ?? contact.middleName,
+          prefix: this.prefix ?? contact.prefix,
+          suffix: this.suffix ?? contact.suffix,
+          familyName: this.familyName ?? contact.familyName,
+          company: this.company ?? contact.company,
+          jobTitle: this.jobTitle ?? contact.jobTitle,
+          emails: this.emails == null
+              ? contact.emails
+              : Iterable.castFrom(
+              this.emails.toSet().union(contact.emails.toSet())),
+          phones: this.phones == null
+              ? contact.phones
+              : Iterable.castFrom(
+              this.phones.toSet().union(contact.phones.toSet())),
+          postalAddresses: this.postalAddresses == null
+              ? contact.postalAddresses
+              : Iterable.castFrom(this
+              .postalAddresses
+              .toSet()
+              .union(contact.postalAddresses.toSet())),
+          avatar: this.avatar ?? contact.avatar);
+
+  /// Returns true if all items in this contact are identical.
+  @override
+  bool operator ==(other) {
+    if (other is! Contact) return false;
+
+    Map otherMap = (other as Contact).toMap(); // ignore: test_types_in_equals
+    Map thisMap = this.toMap();
+
+    for (var key in otherMap.keys) {
+      if (otherMap[key] is! Iterable) {
+        if (thisMap[key] != otherMap[key]) {
+          return false;
+        }
+      } else if (otherMap[key] is Iterable) {
+        var equal = DeepCollectionEquality.unordered()
+            .equals(thisMap[key], otherMap[key]);
+        if (!equal) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode {
+    return this.hashCode;
+  }
+
+  @override
+  String toString() {
+    // TODO: implement toString
+    return super.toString();
+  }
+}
+
+class RawContact {
+  final int rawContactId;
+  final int accountId;
+  final sourceid;
+  final rawContactIsReadOnly;
+  final version;
+  final dirty;
+  final deleted;
+  final contactId;
+  final aggregationMode;
+  final aggregationNeeded;
+  final customRingtone;
+  final sendToVoicemail;
+  final timesContacted;
+  final lastTimeContacted;
+  final starred;
+  final pinned;
+  final displayName;
+  final displayNameAlt;
+  final displayNameSource;
+  final phoneticName;
+  final phoneticNameStyle;
+  final sortKey;
+  final phonebookLabel;
+  final phonebookBucket;
+  final sortKeyAlt;
+  final phonebookLabelAlt;
+  final phonebookBucketAlt;
+  final nameVerified;
+  final sync1;
+  final sync2;
+  final sync3;
+  final sync4;
+  final syncUid;
+  final syncVersion;
+  final hasCalendarEvent;
+  final modifiedTime;
+  final isRestricted;
+  final ypSource;
+  final methodSelected;
+  final customVibrationType;
+  final customRingtonePath;
+  final messageNotification;
+  final messageNotificationPath;
+  final costSave;
+  final customLedType;
+  final backupId;
+
+  RawContact({@required this.rawContactId,
+    @required this.accountId,
+    this.sourceid,
+    this.rawContactIsReadOnly = 0,
+    this.version,
+    this.dirty,
+    this.deleted,
+    this.contactId,
+    this.aggregationMode,
+    this.aggregationNeeded,
+    this.customRingtone,
+    this.sendToVoicemail,
+    this.timesContacted,
+    this.lastTimeContacted,
+    this.starred,
+    this.pinned,
+    this.displayName,
+    this.displayNameAlt,
+    this.displayNameSource,
+    this.phoneticName,
+    this.phoneticNameStyle,
+    this.sortKey,
+    this.phonebookLabel,
+    this.phonebookBucket,
+    this.sortKeyAlt,
+    this.phonebookLabelAlt,
+    this.phonebookBucketAlt,
+    this.nameVerified,
+    this.sync1,
+    this.sync2,
+    this.sync3,
+    this.sync4,
+    this.syncUid,
+    this.syncVersion,
+    this.hasCalendarEvent,
+    this.modifiedTime,
+    this.isRestricted,
+    this.ypSource,
+    this.methodSelected,
+    this.customVibrationType,
+    this.customRingtonePath,
+    this.messageNotification,
+    this.messageNotificationPath,
+    this.costSave,
+    this.customLedType,
+    this.backupId});
 }
 
 class PostalAddress {
@@ -111,6 +275,7 @@ class PostalAddress {
       this.postcode,
       this.region,
       this.country});
+
   String label, street, city, postcode, region, country;
 
   PostalAddress.fromMap(Map m) {
@@ -136,6 +301,7 @@ class PostalAddress {
 /// a [value], such as emails and phone numbers
 class Item {
   Item({this.label, this.value});
+
   String label, value;
 
   Item.fromMap(Map m) {
