@@ -174,55 +174,55 @@ class Contact {
 class RawContact {
   final int rawContactId;
   final int accountId;
-  final sourceid;
-  final rawContactIsReadOnly;
-  final version;
-  final dirty;
-  final deleted;
-  final contactId;
-  final aggregationMode;
-  final aggregationNeeded;
-  final customRingtone;
-  final sendToVoicemail;
-  final timesContacted;
-  final lastTimeContacted;
-  final starred;
-  final pinned;
-  final displayName;
-  final displayNameAlt;
-  final displayNameSource;
-  final phoneticName;
-  final phoneticNameStyle;
-  final sortKey;
-  final phonebookLabel;
-  final phonebookBucket;
-  final sortKeyAlt;
-  final phonebookLabelAlt;
-  final phonebookBucketAlt;
-  final nameVerified;
-  final sync1;
-  final sync2;
-  final sync3;
-  final sync4;
-  final syncUid;
-  final syncVersion;
-  final hasCalendarEvent;
-  final modifiedTime;
-  final isRestricted;
-  final ypSource;
-  final methodSelected;
-  final customVibrationType;
-  final customRingtonePath;
-  final messageNotification;
-  final messageNotificationPath;
-  final costSave;
-  final customLedType;
-  final backupId;
+  int sourceid;
+  bool rawContactIsReadOnly;
+  int version;
+  var dirty;
+  var deleted;
+  var contactId;
+  var aggregationMode;
+  var aggregationNeeded;
+  var customRingtone;
+  var sendToVoicemail;
+  var timesContacted;
+  var lastTimeContacted;
+  var starred;
+  var pinned;
+  var displayName;
+  var displayNameAlt;
+  var displayNameSource;
+  var phoneticName;
+  var phoneticNameStyle;
+  var sortKey;
+  var phonebookLabel;
+  var phonebookBucket;
+  var sortKeyAlt;
+  var phonebookLabelAlt;
+  var phonebookBucketAlt;
+  var nameVerified;
+  var sync1;
+  var sync2;
+  var sync3;
+  var sync4;
+  var syncUid;
+  var syncVersion;
+  var hasCalendarEvent;
+  var modifiedTime;
+  var isRestricted;
+  var ypSource;
+  var methodSelected;
+  var customVibrationType;
+  var customRingtonePath;
+  var messageNotification;
+  var messageNotificationPath;
+  var costSave;
+  var customLedType;
+  var backupId;
 
   RawContact({@required this.rawContactId,
     @required this.accountId,
     this.sourceid,
-    this.rawContactIsReadOnly = 0,
+    this.rawContactIsReadOnly,
     this.version,
     this.dirty,
     this.deleted,
@@ -265,6 +265,55 @@ class RawContact {
     this.costSave,
     this.customLedType,
     this.backupId});
+
+  RawContact.fromMap(Map map)
+      : rawContactId = map['raw_contact_id'],
+        this.accountId = map['account_id'] {
+    this.sourceid = map['sourceid'];
+    this.rawContactIsReadOnly = map['raw_contact_is_read_only'];
+    this.version = map['version'];
+    this.dirty = map['dirty'];
+    this.deleted = map['deleted'];
+    this.contactId = map['contact_id'];
+    this.aggregationMode = map['aggregation_mode'];
+    this.aggregationNeeded = map['aggregation_needed'];
+    this.customRingtone = map['custom_ringtone'];
+    this.sendToVoicemail = map['send_to_voicemail'];
+    this.timesContacted = map['times_contacted'];
+    this.lastTimeContacted = map['last_time_contacted'];
+    this.starred = map['starred'];
+    this.pinned = map['pinned'];
+    this.displayName = map['display_name'];
+    this.displayNameAlt = map['display_name_alt'];
+    this.displayNameSource = map['display_name_source'];
+    this.phoneticName = map['phonetic_name'];
+    this.phoneticNameStyle = map['phonetic_name_style'];
+    this.sortKey = map['sort_key'];
+    this.phonebookLabel = map['phonebook_label'];
+    this.phonebookBucket = map['phonebook_bucket'];
+    this.sortKeyAlt = map['sort_key_alt'];
+    this.phonebookLabelAlt = map['phonebook_label_alt'];
+    this.phonebookBucketAlt = map['phonebook_bucket_alt'];
+    this.nameVerified = map['name_verified'];
+    this.sync1 = map['sync1'];
+    this.sync2 = map['sync2'];
+    this.sync3 = map['sync3'];
+    this.sync4 = map['sync4'];
+    this.syncUid = map['sync_uid'];
+    this.syncVersion = map['sync_version'];
+    this.hasCalendarEvent = map['has_calendar_event'];
+    this.modifiedTime = map['modified_time'];
+    this.isRestricted = map['is_restricted'];
+    this.ypSource = map['yp_source'];
+    this.methodSelected = map['method_selected'];
+    this.customVibrationType = map['custom_vibration_type'];
+    this.customRingtonePath = map['custom_ringtone_path'];
+    this.messageNotification = map['message_notification'];
+    this.messageNotificationPath = map['message_notification_path'];
+    this.costSave = map['cost_save'];
+    this.customLedType = map['custom_led_type'];
+    this.backupId = map['backup_id'];
+  }
 }
 
 class PostalAddress {
