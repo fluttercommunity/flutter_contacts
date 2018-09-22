@@ -175,8 +175,8 @@ class RawContact {
   final int rawContactId;
   final int accountId;
   int sourceid;
-  bool rawContactIsReadOnly;
-  int version;
+  var rawContactIsReadOnly;
+  var version;
   var dirty;
   var deleted;
   var contactId;
