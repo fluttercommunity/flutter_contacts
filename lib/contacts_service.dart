@@ -267,7 +267,7 @@ class RawContact {
     this.backupId});
 
   RawContact.fromMap(Map map)
-      : rawContactId = map['raw_contact_id'],
+      : rawContactId = map['_id'],
         this.accountId = map['account_id'] {
     this.sourceid = map['sourceid'];
     this.rawContactIsReadOnly = map['raw_contact_is_read_only'];
