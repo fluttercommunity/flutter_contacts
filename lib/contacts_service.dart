@@ -3,7 +3,6 @@ import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/services.dart';
-import 'package:meta/meta.dart';
 
 class ContactsService {
   static const MethodChannel _channel =
@@ -37,7 +36,8 @@ class Contact {
       this.emails,
       this.phones,
       this.postalAddresses,
-      this.avatar});
+        this.avatar,
+        this.note});
 
   String identifier,
       displayName,
@@ -47,7 +47,8 @@ class Contact {
       suffix,
       familyName,
       company,
-      jobTitle;
+      jobTitle,
+      note;
   Iterable<Item> emails = [];
   Iterable<Item> phones = [];
   Iterable<PostalAddress> postalAddresses = [];
@@ -68,6 +69,7 @@ class Contact {
     postalAddresses = (m["postalAddresses"] as Iterable)
         ?.map((m) => PostalAddress.fromMap(m));
     avatar = m["avatar"];
+    note = m["note"];
   }
 
   static Map _toMap(Contact contact) {
@@ -96,7 +98,8 @@ class Contact {
       "emails": emails,
       "phones": phones,
       "postalAddresses": postalAddresses,
-      "avatar": contact.avatar
+      "avatar": contact.avatar,
+      "note": contact.note
     };
   }
 
@@ -104,36 +107,31 @@ class Contact {
     return Contact._toMap(this);
   }
 
-  /// Updates this [Contact] with data from [contact].
-  void mergeWith(Contact contact) {}
-
-  /// "Adding" two contacts together is basically applying the data
-  /// from the missing field.
-  /// If you would like to merge the contacts, use the [merge] function.
-  operator +(Contact contact) =>
+  /// The [+] operator fills in this contact's empty fields with the fields from [other]
+  operator +(Contact other) =>
       Contact(
-          givenName: this.givenName ?? contact.givenName,
-          middleName: this.middleName ?? contact.middleName,
-          prefix: this.prefix ?? contact.prefix,
-          suffix: this.suffix ?? contact.suffix,
-          familyName: this.familyName ?? contact.familyName,
-          company: this.company ?? contact.company,
-          jobTitle: this.jobTitle ?? contact.jobTitle,
+          givenName: this.givenName ?? other.givenName,
+          middleName: this.middleName ?? other.middleName,
+          prefix: this.prefix ?? other.prefix,
+          suffix: this.suffix ?? other.suffix,
+          familyName: this.familyName ?? other.familyName,
+          company: this.company ?? other.company,
+          jobTitle: this.jobTitle ?? other.jobTitle,
           emails: this.emails == null
-              ? contact.emails
+              ? other.emails
               : Iterable.castFrom(
-              this.emails.toSet().union(contact.emails.toSet())),
+              this.emails.toSet().union(other.emails.toSet())),
           phones: this.phones == null
-              ? contact.phones
+              ? other.phones
               : Iterable.castFrom(
-              this.phones.toSet().union(contact.phones.toSet())),
+              this.phones.toSet().union(other.phones.toSet())),
           postalAddresses: this.postalAddresses == null
-              ? contact.postalAddresses
+              ? other.postalAddresses
               : Iterable.castFrom(this
               .postalAddresses
               .toSet()
-              .union(contact.postalAddresses.toSet())),
-          avatar: this.avatar ?? contact.avatar);
+              .union(other.postalAddresses.toSet())),
+          avatar: this.avatar ?? other.avatar);
 
   /// Returns true if all items in this contact are identical.
   @override
@@ -168,151 +166,6 @@ class Contact {
   String toString() {
     // TODO: implement toString
     return super.toString();
-  }
-}
-
-class RawContact {
-  final int rawContactId;
-  final int accountId;
-  int sourceid;
-  var rawContactIsReadOnly;
-  var version;
-  var dirty;
-  var deleted;
-  var contactId;
-  var aggregationMode;
-  var aggregationNeeded;
-  var customRingtone;
-  var sendToVoicemail;
-  var timesContacted;
-  var lastTimeContacted;
-  var starred;
-  var pinned;
-  var displayName;
-  var displayNameAlt;
-  var displayNameSource;
-  var phoneticName;
-  var phoneticNameStyle;
-  var sortKey;
-  var phonebookLabel;
-  var phonebookBucket;
-  var sortKeyAlt;
-  var phonebookLabelAlt;
-  var phonebookBucketAlt;
-  var nameVerified;
-  var sync1;
-  var sync2;
-  var sync3;
-  var sync4;
-  var syncUid;
-  var syncVersion;
-  var hasCalendarEvent;
-  var modifiedTime;
-  var isRestricted;
-  var ypSource;
-  var methodSelected;
-  var customVibrationType;
-  var customRingtonePath;
-  var messageNotification;
-  var messageNotificationPath;
-  var costSave;
-  var customLedType;
-  var backupId;
-
-  RawContact({@required this.rawContactId,
-    @required this.accountId,
-    this.sourceid,
-    this.rawContactIsReadOnly,
-    this.version,
-    this.dirty,
-    this.deleted,
-    this.contactId,
-    this.aggregationMode,
-    this.aggregationNeeded,
-    this.customRingtone,
-    this.sendToVoicemail,
-    this.timesContacted,
-    this.lastTimeContacted,
-    this.starred,
-    this.pinned,
-    this.displayName,
-    this.displayNameAlt,
-    this.displayNameSource,
-    this.phoneticName,
-    this.phoneticNameStyle,
-    this.sortKey,
-    this.phonebookLabel,
-    this.phonebookBucket,
-    this.sortKeyAlt,
-    this.phonebookLabelAlt,
-    this.phonebookBucketAlt,
-    this.nameVerified,
-    this.sync1,
-    this.sync2,
-    this.sync3,
-    this.sync4,
-    this.syncUid,
-    this.syncVersion,
-    this.hasCalendarEvent,
-    this.modifiedTime,
-    this.isRestricted,
-    this.ypSource,
-    this.methodSelected,
-    this.customVibrationType,
-    this.customRingtonePath,
-    this.messageNotification,
-    this.messageNotificationPath,
-    this.costSave,
-    this.customLedType,
-    this.backupId});
-
-  RawContact.fromMap(Map map)
-      : rawContactId = map['_id'],
-        this.accountId = map['account_id'] {
-    this.sourceid = map['sourceid'];
-    this.rawContactIsReadOnly = map['raw_contact_is_read_only'];
-    this.version = map['version'];
-    this.dirty = map['dirty'];
-    this.deleted = map['deleted'];
-    this.contactId = map['contact_id'];
-    this.aggregationMode = map['aggregation_mode'];
-    this.aggregationNeeded = map['aggregation_needed'];
-    this.customRingtone = map['custom_ringtone'];
-    this.sendToVoicemail = map['send_to_voicemail'];
-    this.timesContacted = map['times_contacted'];
-    this.lastTimeContacted = map['last_time_contacted'];
-    this.starred = map['starred'];
-    this.pinned = map['pinned'];
-    this.displayName = map['display_name'];
-    this.displayNameAlt = map['display_name_alt'];
-    this.displayNameSource = map['display_name_source'];
-    this.phoneticName = map['phonetic_name'];
-    this.phoneticNameStyle = map['phonetic_name_style'];
-    this.sortKey = map['sort_key'];
-    this.phonebookLabel = map['phonebook_label'];
-    this.phonebookBucket = map['phonebook_bucket'];
-    this.sortKeyAlt = map['sort_key_alt'];
-    this.phonebookLabelAlt = map['phonebook_label_alt'];
-    this.phonebookBucketAlt = map['phonebook_bucket_alt'];
-    this.nameVerified = map['name_verified'];
-    this.sync1 = map['sync1'];
-    this.sync2 = map['sync2'];
-    this.sync3 = map['sync3'];
-    this.sync4 = map['sync4'];
-    this.syncUid = map['sync_uid'];
-    this.syncVersion = map['sync_version'];
-    this.hasCalendarEvent = map['has_calendar_event'];
-    this.modifiedTime = map['modified_time'];
-    this.isRestricted = map['is_restricted'];
-    this.ypSource = map['yp_source'];
-    this.methodSelected = map['method_selected'];
-    this.customVibrationType = map['custom_vibration_type'];
-    this.customRingtonePath = map['custom_ringtone_path'];
-    this.messageNotification = map['message_notification'];
-    this.messageNotificationPath = map['message_notification_path'];
-    this.costSave = map['cost_save'];
-    this.customLedType = map['custom_led_type'];
-    this.backupId = map['backup_id'];
   }
 }
 
