@@ -36,8 +36,8 @@ class Contact {
       this.emails,
       this.phones,
       this.postalAddresses,
-        this.avatar,
-        this.note});
+      this.avatar,
+      this.note});
 
   String identifier,
       displayName,
@@ -108,30 +108,27 @@ class Contact {
   }
 
   /// The [+] operator fills in this contact's empty fields with the fields from [other]
-  operator +(Contact other) =>
-      Contact(
-          givenName: this.givenName ?? other.givenName,
-          middleName: this.middleName ?? other.middleName,
-          prefix: this.prefix ?? other.prefix,
-          suffix: this.suffix ?? other.suffix,
-          familyName: this.familyName ?? other.familyName,
-          company: this.company ?? other.company,
-          jobTitle: this.jobTitle ?? other.jobTitle,
-          emails: this.emails == null
-              ? other.emails
-              : Iterable.castFrom(
-              this.emails.toSet().union(other.emails.toSet())),
-          phones: this.phones == null
-              ? other.phones
-              : Iterable.castFrom(
-              this.phones.toSet().union(other.phones.toSet())),
-          postalAddresses: this.postalAddresses == null
-              ? other.postalAddresses
-              : Iterable.castFrom(this
+  operator +(Contact other) => Contact(
+      givenName: this.givenName ?? other.givenName,
+      middleName: this.middleName ?? other.middleName,
+      prefix: this.prefix ?? other.prefix,
+      suffix: this.suffix ?? other.suffix,
+      familyName: this.familyName ?? other.familyName,
+      company: this.company ?? other.company,
+      jobTitle: this.jobTitle ?? other.jobTitle,
+      emails: this.emails == null
+          ? other.emails
+          : Iterable.castFrom(this.emails.toSet().union(other.emails.toSet())),
+      phones: this.phones == null
+          ? other.phones
+          : Iterable.castFrom(this.phones.toSet().union(other.phones.toSet())),
+      postalAddresses: this.postalAddresses == null
+          ? other.postalAddresses
+          : Iterable.castFrom(this
               .postalAddresses
               .toSet()
               .union(other.postalAddresses.toSet())),
-          avatar: this.avatar ?? other.avatar);
+      avatar: this.avatar ?? other.avatar);
 
   /// Returns true if all items in this contact are identical.
   @override

@@ -130,7 +130,8 @@ void main() {
       "emails": [],
       "phones": [],
       "postalAddresses": [],
-      "avatar": null
+      "avatar": null,
+      "note": null
     });
   });
 }
@@ -149,6 +150,7 @@ void expectMethodCall(List<MethodCall> log, String methodName) {
         'suffix': null,
         'company': null,
         'jobTitle': null,
+        'note': null,
         'emails': [
           {'label': 'label', 'value': null}
         ],
