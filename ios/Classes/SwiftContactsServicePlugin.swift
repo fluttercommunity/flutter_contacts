@@ -51,7 +51,8 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
                     CNContactPostalAddressesKey,
                     CNContactOrganizationNameKey,
                     CNContactThumbnailImageDataKey,
-                    CNContactJobTitleKey] as [Any]
+                    CNContactJobTitleKey,
+                    CNContactNoteKey] as [Any]
         let fetchRequest = CNContactFetchRequest(keysToFetch: keys as! [CNKeyDescriptor])
         // Set the predicate if there is a query
         if let query = query{
@@ -119,6 +120,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
         contact.nameSuffix = dictionary["suffix"] as? String ?? ""
         contact.organizationName = dictionary["company"] as? String ?? ""
         contact.jobTitle = dictionary["jobTitle"] as? String ?? ""
+        contact.note = dictionary["note"] as? String ?? ""
         if let avatarData = (dictionary["avatar"] as? FlutterStandardTypedData)?.data {
             contact.imageData = avatarData
         }
@@ -169,6 +171,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
         result["suffix"] = contact.nameSuffix
         result["company"] = contact.organizationName
         result["jobTitle"] = contact.jobTitle
+        result["note"] = contact.note
         if let avatarData = contact.thumbnailImageData {
             result["avatar"] = FlutterStandardTypedData(bytes: avatarData)
         }

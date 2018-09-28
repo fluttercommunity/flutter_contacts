@@ -108,6 +108,8 @@ class ContactDetailsPage extends StatelessWidget {
                   trailing: Text(_contact.company ?? "")),
               ListTile(
                   title: Text("Job"), trailing: Text(_contact.jobTitle ?? "")),
+              ListTile(
+                  title: Text("Note"), trailing: Text(_contact.note ?? "")),
               AddressesTile(_contact.postalAddresses),
               ItemsTile("Phones", _contact.phones),
               ItemsTile("Emails", _contact.emails)
@@ -240,6 +242,9 @@ class _AddContactPageState extends State<AddContactPage> {
                 TextFormField(
                     decoration: const InputDecoration(labelText: 'Job'),
                     onSaved: (v) => contact.jobTitle = v),
+                TextFormField(
+                    decoration: const InputDecoration(labelText: 'Note'),
+                    onSaved: (v) => contact.note = v),
                 TextFormField(
                     decoration: const InputDecoration(labelText: 'Street'),
                     onSaved: (v) => address.street = v),

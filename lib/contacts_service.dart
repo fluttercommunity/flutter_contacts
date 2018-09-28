@@ -116,6 +116,7 @@ class Contact {
       familyName: this.familyName ?? other.familyName,
       company: this.company ?? other.company,
       jobTitle: this.jobTitle ?? other.jobTitle,
+      note: this.note ?? other.note,
       emails: this.emails == null
           ? other.emails
           : Iterable.castFrom(this.emails.toSet().union(other.emails.toSet())),
@@ -155,15 +156,7 @@ class Contact {
   }
 
   @override
-  int get hashCode {
-    return this.hashCode;
-  }
-
-  @override
-  String toString() {
-    // TODO: implement toString
-    return super.toString();
-  }
+  int get hashCode => super.hashCode;
 }
 
 class PostalAddress {
