@@ -120,16 +120,16 @@ class Contact {
       note: this.note ?? other.note,
       emails: this.emails == null
           ? other.emails
-          : this.emails.toSet().union(other.emails.toSet()).toList(),
+          : this.emails.toSet().union(other.emails?.toSet() ?? Set()).toList(),
       phones: this.phones == null
           ? other.phones
-          : this.phones.toSet().union(other.phones.toSet()).toList(),
+          : this.phones.toSet().union(other.phones?.toSet() ?? Set()).toList(),
       postalAddresses: this.postalAddresses == null
           ? other.postalAddresses
           : this
               .postalAddresses
               .toSet()
-              .union(other.postalAddresses.toSet())
+              .union(other.postalAddresses?.toSet() ?? Set())
               .toList(),
       avatar: this.avatar ?? other.avatar);
 

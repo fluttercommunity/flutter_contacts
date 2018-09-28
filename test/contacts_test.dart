@@ -78,7 +78,7 @@ void main() {
         Contact(givenName: "givenName", familyName: "familyName", emails: [
       Item(label: "Home", value: "home@example.com"),
       Item(label: "Work", value: "work@example.com"),
-    ]);
+    ], phones: [], postalAddresses: []);
     Contact contact2 = Contact(familyName: "familyName", phones: [
       Item(label: "Mobile", value: "111-222-3344")
     ], emails: [
@@ -110,6 +110,12 @@ void main() {
     ]);
 
     expect(contact1 + contact2, mergedContact);
+  });
+
+  test('should provide a valid merged contact, with no extra info', (){
+    Contact contact1 = Contact(familyName: "familyName");
+    Contact contact2 = Contact();
+    expect(contact1 + contact2, contact1);
   });
 
   test('should provide a map of the contact', () {
