@@ -39,8 +39,6 @@ public class ContactsServicePlugin implements MethodCallHandler {
 
   private final ContentResolver contentResolver;
 
-  private Result getContactResult;
-
   public static void registerWith(Registrar registrar) {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), "github.com/clovisnicolas/flutter_contacts");
     channel.setMethodCallHandler(new ContactsServicePlugin(registrar.context().getContentResolver()));
@@ -50,8 +48,7 @@ public class ContactsServicePlugin implements MethodCallHandler {
   public void onMethodCall(MethodCall call, Result result) {
     switch(call.method){
       case "getContacts":
-        getContactResult = result;
-        this.getContacts((String)call.arguments);
+        this.getContacts((String)call.arguments, result);
         break;
       case "addContact":
         Contact c = Contact.fromMap((HashMap)call.arguments);
@@ -108,13 +105,19 @@ public class ContactsServicePlugin implements MethodCallHandler {
 
 
   @TargetApi(Build.VERSION_CODES.ECLAIR)
-  private void getContacts(String query) {
-    new GetContactsTask().execute(new String[] {query});
+  private void getContacts(String query, Result result) {
+    new GetContactsTask(result).execute(new String[] {query});
   }
 
   @TargetApi(Build.VERSION_CODES.CUPCAKE)
   private class GetContactsTask extends AsyncTask<String, Void, ArrayList<HashMap>> {
 
+    private Result getContactResult;
+	
+	public GetContactsTask(Result result){
+		this.getContactResult = result;
+	}	
+  
     @TargetApi(Build.VERSION_CODES.ECLAIR)
     protected ArrayList<HashMap> doInBackground(String... query) {
       ArrayList<Contact> contacts = getContactsFrom(getCursor(query[0]));
