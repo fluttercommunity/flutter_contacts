@@ -1,3 +1,6 @@
+## [0.0.9] - October 10th, 2018
+* Fix an issue when fetching contacts on Android
+
 ## [0.0.8] - August 16th, 2018
 * Fix an issue with phones being added to emails on Android
 * Update plugin for dart 2
