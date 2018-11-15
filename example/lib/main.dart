@@ -58,10 +58,7 @@ class _ContactListPageState extends State<ContactListPage> {
                     },
                     leading: (c.avatar != null && c.avatar.length > 0)
                         ? CircleAvatar(backgroundImage: MemoryImage(c.avatar))
-                        : CircleAvatar(
-                            child: Text(c.displayName.length > 1
-                                ? c.displayName?.substring(0, 2)
-                                : "")),
+                        : CircleAvatar(child: Text(c.initials())),
                     title: Text(c.displayName ?? ""),
                   );
                 },
