@@ -52,10 +52,10 @@ class Contact {
   Uint8List avatar;
   
   String initials() {
-    return ((this.givenName.isNotEmpty == true
+    return ((this.givenName?.isNotEmpty == true
                                       ? this.givenName[0]
                                       : "") +
-                                  (this.familyName.isNotEmpty == true
+                                  (this.familyName?.isNotEmpty == true
                                       ? this.familyName[0]
                                       : "")).toUpperCase();
   }
