@@ -70,7 +70,6 @@ void main() {
     expect(contact4.initials(), "");
   });
 }
-}
 
 void expectMethodCall(List<MethodCall> log, String methodName) {
   expect(log, <Matcher>[
