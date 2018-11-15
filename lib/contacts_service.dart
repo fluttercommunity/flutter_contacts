@@ -50,6 +50,15 @@ class Contact {
   Iterable<Item> phones = [];
   Iterable<PostalAddress> postalAddresses = [];
   Uint8List avatar;
+  
+  String initials() {
+    return ((this.givenName.isNotEmpty == true
+                                      ? this.givenName[0]
+                                      : "") +
+                                  (this.familyName.isNotEmpty == true
+                                      ? this.familyName[0]
+                                      : "")).toUpperCase();
+  }
 
   Contact.fromMap(Map m) {
     identifier = m["identifier"];
