@@ -4,7 +4,7 @@ version: 0.0.9
 authors:
 - Lukas Dickie <lukas@changefly.com>
 - Clovis Nicolas <clovisnicolas0@gmail.com>
-homepage: https://github.com/clovisnicolas/flutter_contacts
+homepage: https://github.com/fluttercommunity/flutter_contacts
 maintainer: Lukas Dickie (@lukasgit)
 
 environment:
