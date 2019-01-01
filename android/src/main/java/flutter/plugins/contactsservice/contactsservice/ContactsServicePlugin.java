@@ -48,7 +48,7 @@ public class ContactsServicePlugin implements MethodCallHandler {
   public void onMethodCall(MethodCall call, Result result) {
     switch(call.method){
       case "getContacts":
-        this.getContacts((String)call.arguments, result);
+        this.getContacts((String)call.argument("query"), (boolean)call.argument("withThumbnails"), result);
         break;
       case "addContact":
         Contact c = Contact.fromMap((HashMap)call.arguments);
@@ -105,24 +105,28 @@ public class ContactsServicePlugin implements MethodCallHandler {
 
 
   @TargetApi(Build.VERSION_CODES.ECLAIR)
-  private void getContacts(String query, Result result) {
-    new GetContactsTask(result).execute(new String[] {query});
+  private void getContacts(String query, boolean withThumbnails, Result result) {
+    new GetContactsTask(result, withThumbnails).execute(new String[] {query});
   }
 
   @TargetApi(Build.VERSION_CODES.CUPCAKE)
   private class GetContactsTask extends AsyncTask<String, Void, ArrayList<HashMap>> {
 
     private Result getContactResult;
+    private boolean withThumbnails;
 	
-	public GetContactsTask(Result result){
-		this.getContactResult = result;
-	}	
+	public GetContactsTask(Result result, boolean withThumbnails){
+	  this.getContactResult = result;
+	  this.withThumbnails = withThumbnails;
+	}
   
     @TargetApi(Build.VERSION_CODES.ECLAIR)
     protected ArrayList<HashMap> doInBackground(String... query) {
       ArrayList<Contact> contacts = getContactsFrom(getCursor(query[0]));
-      for(Contact c : contacts){
-        setAvatarDataForContactIfAvailable(c);
+      if (withThumbnails) {
+        for(Contact c : contacts){
+          setAvatarDataForContactIfAvailable(c);
+        }
       }
       //Transform the list of contacts to a list of Map
       ArrayList<HashMap> contactMaps = new ArrayList<>();
