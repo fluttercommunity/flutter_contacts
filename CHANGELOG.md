@@ -1,6 +1,7 @@
-## [0.1.0] - December 22nd, 2018
+## [0.1.0] - January 4th, 2019
 
 * Update pubspec version and maintainer info for Dart Pub
+* Add withThumbnails and update example (@trinqk)
 
 ## [0.0.9] - October 10th, 2018
 
