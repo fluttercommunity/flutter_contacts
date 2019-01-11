@@ -1,3 +1,7 @@
+## [0.1.1] - January 11th, 2019
+
+* Added Ability to Share VCF Card (@AppleEducate)
+
 ## [0.1.0] - January 4th, 2019
 
 * Update pubspec version and maintainer info for Dart Pub

@@ -3,17 +3,18 @@ import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 
+export 'share.dart';
+
 class ContactsService {
   static const MethodChannel _channel =
       MethodChannel('github.com/clovisnicolas/flutter_contacts');
 
   /// Fetches all contacts, or when specified, the contacts with a name
   /// matching [query]
-  static Future<Iterable<Contact>> getContacts({String query, bool withThumbnails = true}) async {
-    Iterable contacts = await _channel.invokeMethod('getContacts', <String, dynamic> {
-      'query': query,
-      'withThumbnails': withThumbnails
-    });
+  static Future<Iterable<Contact>> getContacts(
+      {String query, bool withThumbnails = true}) async {
+    Iterable contacts = await _channel.invokeMethod('getContacts',
+        <String, dynamic>{'query': query, 'withThumbnails': withThumbnails});
     return contacts.map((m) => Contact.fromMap(m));
   }
 
