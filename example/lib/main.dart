@@ -81,11 +81,13 @@ class ContactDetailsPage extends StatelessWidget {
     return Scaffold(
         appBar:
             AppBar(title: Text(_contact.displayName ?? ""), actions: <Widget>[
-          FlatButton(
-              child: Icon(Icons.delete),
-              onPressed: () {
-                ContactsService.deleteContact(_contact);
-              })
+          IconButton(
+            icon: Icon(Icons.share),
+            onPressed: () => shareVCFCard(context, contact: _contact),
+          ),
+          IconButton(
+              icon: Icon(Icons.delete),
+              onPressed: () => ContactsService.deleteContact(_contact))
         ]),
         body: SafeArea(
           child: ListView(
