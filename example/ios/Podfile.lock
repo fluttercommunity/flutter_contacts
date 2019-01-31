@@ -2,20 +2,32 @@ PODS:
   - contacts_service (0.0.1):
     - Flutter
   - Flutter (1.0.0)
+  - path_provider (0.0.1):
+    - Flutter
+  - share_extend (0.0.1):
+    - Flutter
 
 DEPENDENCIES:
-  - contacts_service (from `/Users/timsneath/git/flutter_contacts/ios`)
-  - Flutter (from `/Users/timsneath/flutter/bin/cache/artifacts/engine/ios`)
+  - contacts_service (from `/Users/developer/Github/flutter_contacts/ios`)
+  - Flutter (from `/Users/developer/flutter/bin/cache/artifacts/engine/ios`)
+  - path_provider (from `/Users/developer/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider-0.4.1/ios`)
+  - share_extend (from `/Users/developer/flutter/.pub-cache/hosted/pub.dartlang.org/share_extend-1.0.3/ios`)
 
 EXTERNAL SOURCES:
   contacts_service:
-    :path: "/Users/timsneath/git/flutter_contacts/ios"
+    :path: "/Users/developer/Github/flutter_contacts/ios"
   Flutter:
-    :path: "/Users/timsneath/flutter/bin/cache/artifacts/engine/ios"
+    :path: "/Users/developer/flutter/bin/cache/artifacts/engine/ios"
+  path_provider:
+    :path: "/Users/developer/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider-0.4.1/ios"
+  share_extend:
+    :path: "/Users/developer/flutter/.pub-cache/hosted/pub.dartlang.org/share_extend-1.0.3/ios"
 
 SPEC CHECKSUMS:
   contacts_service: 3d584b5457e56df4e68608a765b0dfc88b80479c
   Flutter: 9d0fac939486c9aba2809b7982dfdbb47a7b0296
+  path_provider: 09407919825bfe3c2deae39453b7a5b44f467873
+  share_extend: 5c61436f8ad534ac10471cf80c929cc16b226196
 
 PODFILE CHECKSUM: b3f98f39b16cc0a18e5ea9ecbe5cfbc88c2ad26a
 

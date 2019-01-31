@@ -3,6 +3,8 @@ import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 
+export 'share.dart';
+
 class ContactsService {
   static const MethodChannel _channel =
       MethodChannel('github.com/clovisnicolas/flutter_contacts');
