@@ -54,7 +54,6 @@ await ContactsService.deleteContact(contact);
 ## Todo
 
 - [ ] update contact
-- [ ] add withThumbnails optional parameter in getContacts method
 
 ## Contributions
 
