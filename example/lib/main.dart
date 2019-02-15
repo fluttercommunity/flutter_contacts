@@ -6,9 +6,12 @@ void main() => runApp(ContactsExampleApp());
 class ContactsExampleApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(routes: <String, WidgetBuilder>{
-      '/add': (BuildContext context) => AddContactPage()
-    }, home: ContactListPage());
+    return MaterialApp(
+      home: ContactListPage(),
+      routes: <String, WidgetBuilder>{
+        '/add': (BuildContext context) => AddContactPage()
+      },
+    );
   }
 }
 
@@ -38,35 +41,40 @@ class _ContactListPageState extends State<ContactListPage> {
     return Scaffold(
       appBar: AppBar(title: Text('Contacts Plugin Example')),
       floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.add),
-          onPressed: () {
-            Navigator.of(context).pushNamed("/add").then((_) {
-              refreshContacts();
-            });
-          }),
+        child: Icon(Icons.add),
+        onPressed: () {
+          Navigator.of(context).pushNamed("/add").then((_) {
+            refreshContacts();
+          });
+        },
+      ),
       body: SafeArea(
         child: _contacts != null
             ? ListView.builder(
-                itemCount: _contacts?.length ?? 0,
-                itemBuilder: (BuildContext context, int index) {
-                  Contact c = _contacts?.elementAt(index);
-                  return ListTile(
-                    onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              ContactDetailsPage(c)));
-                    },
-                    leading: (c.avatar != null && c.avatar.length > 0)
-                        ? CircleAvatar(backgroundImage: MemoryImage(c.avatar))
-                        : CircleAvatar(
-                            child: Text(c.displayName.length > 1
-                                ? c.displayName?.substring(0, 2)
-                                : "")),
-                    title: Text(c.displayName ?? ""),
+              itemCount: _contacts?.length ?? 0,
+              itemBuilder: (BuildContext context, int index) {
+                Contact c = _contacts?.elementAt(index);
+                return ListTile(
+                  title: Text(c.displayName ?? ""),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (BuildContext context) => ContactDetailsPage(c)),
+                    );
+                  },
+                  leading: (c.avatar != null && c.avatar.length > 0)
+                      ? CircleAvatar(
+                          backgroundImage: MemoryImage(c.avatar),
+                        )
+                      : CircleAvatar(
+                          child: Text(c.displayName.length > 1
+                              ? c.displayName?.substring(0, 2)
+                              : ""
+                          ),
+                        ),
                   );
                 },
               )
-            : Center(child: CircularProgressIndicator()),
+            : Center(child: CircularProgressIndicator(),),
       ),
     );
   }
@@ -79,43 +87,57 @@ class ContactDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar:
-            AppBar(title: Text(_contact.displayName ?? ""), actions: <Widget>[
+      appBar: AppBar(
+        title: Text(_contact.displayName ?? ""),
+        actions: <Widget>[
           IconButton(
             icon: Icon(Icons.share),
             onPressed: () => shareVCFCard(context, contact: _contact),
           ),
           IconButton(
-              icon: Icon(Icons.delete),
-              onPressed: () => ContactsService.deleteContact(_contact))
-        ]),
-        body: SafeArea(
-          child: ListView(
-            children: <Widget>[
-              ListTile(
-                  title: Text("Name"),
-                  trailing: Text(_contact.givenName ?? "")),
-              ListTile(
-                  title: Text("Middle name"),
-                  trailing: Text(_contact.middleName ?? "")),
-              ListTile(
-                  title: Text("Family name"),
-                  trailing: Text(_contact.familyName ?? "")),
-              ListTile(
-                  title: Text("Prefix"), trailing: Text(_contact.prefix ?? "")),
-              ListTile(
-                  title: Text("Suffix"), trailing: Text(_contact.suffix ?? "")),
-              ListTile(
-                  title: Text("Company"),
-                  trailing: Text(_contact.company ?? "")),
-              ListTile(
-                  title: Text("Job"), trailing: Text(_contact.jobTitle ?? "")),
-              AddressesTile(_contact.postalAddresses),
-              ItemsTile("Phones", _contact.phones),
-              ItemsTile("Emails", _contact.emails)
-            ],
-          ),
-        ));
+            icon: Icon(Icons.delete),
+            onPressed: () => ContactsService.deleteContact(_contact),
+          )
+        ],
+      ),
+      body: SafeArea(
+        child: ListView(
+          children: <Widget>[
+            ListTile(
+              title: Text("Name"),
+              trailing: Text(_contact.givenName ?? ""),
+            ),
+            ListTile(
+              title: Text("Middle name"),
+              trailing: Text(_contact.middleName ?? ""),
+            ),
+            ListTile(
+              title: Text("Family name"),
+              trailing: Text(_contact.familyName ?? ""),
+            ),
+            ListTile(
+              title: Text("Prefix"),
+              trailing: Text(_contact.prefix ?? ""),
+            ),
+            ListTile(
+              title: Text("Suffix"),
+              trailing: Text(_contact.suffix ?? ""),
+            ),
+            ListTile(
+              title: Text("Company"),
+              trailing: Text(_contact.company ?? ""),
+            ),
+            ListTile(
+              title: Text("Job"),
+              trailing: Text(_contact.jobTitle ?? ""),
+            ),
+            AddressesTile(_contact.postalAddresses),
+            ItemsTile("Phones", _contact.phones),
+            ItemsTile("Emails", _contact.emails)
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -125,34 +147,39 @@ class AddressesTile extends StatelessWidget {
 
   Widget build(BuildContext context) {
     return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          ListTile(title: Text("Addresses")),
-          Column(
-              children: _addresses
-                  .map((a) => Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Column(
-                          children: <Widget>[
-                            ListTile(
-                                title: Text("Street"),
-                                trailing: Text(a.street)),
-                            ListTile(
-                                title: Text("Postcode"),
-                                trailing: Text(a.postcode)),
-                            ListTile(
-                                title: Text("City"), trailing: Text(a.city)),
-                            ListTile(
-                                title: Text("Region"),
-                                trailing: Text(a.region)),
-                            ListTile(
-                                title: Text("Country"),
-                                trailing: Text(a.country)),
-                          ],
-                        ),
-                      ))
-                  .toList())
-        ]);
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        ListTile(title: Text("Addresses")),
+        Column(
+          children: _addresses.map((a) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Column(
+              children: <Widget>[
+                ListTile(
+                  title: Text("Street"),
+                  trailing: Text(a.street),
+                ),
+                ListTile(
+                  title: Text("Postcode"),
+                  trailing: Text(a.postcode),
+                ),
+                ListTile(
+                  title: Text("City"), trailing: Text(a.city),
+                ),
+                ListTile(
+                  title: Text("Region"),
+                  trailing: Text(a.region),
+                ),
+                ListTile(
+                  title: Text("Country"),
+                  trailing: Text(a.country),
+                ),
+              ],
+            ),
+          )).toList(),
+        ),
+      ],
+    );
   }
 }
 
@@ -164,18 +191,20 @@ class ItemsTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          ListTile(title: Text(_title)),
-          Column(
-              children: _items
-                  .map((i) => Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: ListTile(
-                          title: Text(i.label ?? ""),
-                          trailing: Text(i.value ?? ""))))
-                  .toList())
-        ]);
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        ListTile(title: Text(_title)),
+        Column(
+          children: _items.map((i) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: ListTile(
+              title: Text(i.label ?? ""),
+              trailing: Text(i.value ?? ""),
+            ),),
+          ).toList(),
+        ),
+      ],
+    );
   }
 }
 
@@ -196,69 +225,83 @@ class _AddContactPageState extends State<AddContactPage> {
         title: Text("Add a contact"),
         actions: <Widget>[
           FlatButton(
-              onPressed: () {
-                _formKey.currentState.save();
-                contact.postalAddresses = [address];
-                ContactsService.addContact(contact);
-                Navigator.of(context).pop();
-              },
-              child: Icon(Icons.save, color: Colors.white))
+            onPressed: () {
+              _formKey.currentState.save();
+              contact.postalAddresses = [address];
+              ContactsService.addContact(contact);
+              Navigator.of(context).pop();
+            },
+            child: Icon(Icons.save, color: Colors.white),
+          )
         ],
       ),
       body: Container(
         padding: EdgeInsets.all(12.0),
         child: Form(
-            key: _formKey,
-            child: ListView(
-              children: <Widget>[
-                TextFormField(
-                    decoration: const InputDecoration(labelText: 'First name'),
-                    onSaved: (v) => contact.givenName = v),
-                TextFormField(
-                    decoration: const InputDecoration(labelText: 'Middle name'),
-                    onSaved: (v) => contact.middleName = v),
-                TextFormField(
-                    decoration: const InputDecoration(labelText: 'Last name'),
-                    onSaved: (v) => contact.familyName = v),
-                TextFormField(
-                    decoration: const InputDecoration(labelText: 'Prefix'),
-                    onSaved: (v) => contact.prefix = v),
-                TextFormField(
-                    decoration: const InputDecoration(labelText: 'Suffix'),
-                    onSaved: (v) => contact.suffix = v),
-                TextFormField(
-                    decoration: const InputDecoration(labelText: 'Phone'),
-                    onSaved: (v) =>
-                        contact.phones = [Item(label: "mobile", value: v)],
-                    keyboardType: TextInputType.phone),
-                TextFormField(
-                    decoration: const InputDecoration(labelText: 'E-mail'),
-                    onSaved: (v) =>
-                        contact.emails = [Item(label: "work", value: v)],
-                    keyboardType: TextInputType.emailAddress),
-                TextFormField(
-                    decoration: const InputDecoration(labelText: 'Company'),
-                    onSaved: (v) => contact.company = v),
-                TextFormField(
-                    decoration: const InputDecoration(labelText: 'Job'),
-                    onSaved: (v) => contact.jobTitle = v),
-                TextFormField(
-                    decoration: const InputDecoration(labelText: 'Street'),
-                    onSaved: (v) => address.street = v),
-                TextFormField(
-                    decoration: const InputDecoration(labelText: 'City'),
-                    onSaved: (v) => address.city = v),
-                TextFormField(
-                    decoration: const InputDecoration(labelText: 'Region'),
-                    onSaved: (v) => address.region = v),
-                TextFormField(
-                    decoration: const InputDecoration(labelText: 'Postal code'),
-                    onSaved: (v) => address.postcode = v),
-                TextFormField(
-                    decoration: const InputDecoration(labelText: 'Country'),
-                    onSaved: (v) => address.country = v),
-              ],
-            )),
+          key: _formKey,
+          child: ListView(
+            children: <Widget>[
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'First name'),
+                onSaved: (v) => contact.givenName = v,
+              ),
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'Middle name'),
+                onSaved: (v) => contact.middleName = v,
+              ),
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'Last name'),
+                onSaved: (v) => contact.familyName = v,
+              ),
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'Prefix'),
+                onSaved: (v) => contact.prefix = v,
+              ),
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'Suffix'),
+                onSaved: (v) => contact.suffix = v,
+              ),
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'Phone'),
+                onSaved: (v) => contact.phones = [Item(label: "mobile", value: v)],
+                keyboardType: TextInputType.phone,
+              ),
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'E-mail'),
+                onSaved: (v) => contact.emails = [Item(label: "work", value: v)],
+                keyboardType: TextInputType.emailAddress,
+              ),
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'Company'),
+                onSaved: (v) => contact.company = v,
+              ),
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'Job'),
+                onSaved: (v) => contact.jobTitle = v,
+              ),
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'Street'),
+                onSaved: (v) => address.street = v,
+              ),
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'City'),
+                onSaved: (v) => address.city = v,
+              ),
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'Region'),
+                onSaved: (v) => address.region = v,
+              ),
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'Postal code'),
+                onSaved: (v) => address.postcode = v,
+              ),
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'Country'),
+                onSaved: (v) => address.country = v,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
