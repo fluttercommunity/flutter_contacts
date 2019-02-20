@@ -3,7 +3,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'contacts_service'
-  s.version          = '0.0.1'
+  s.version          = '0.2.0'
   s.summary          = 'A new Flutter plugin.'
   s.description      = <<-DESC
 A new Flutter plugin.

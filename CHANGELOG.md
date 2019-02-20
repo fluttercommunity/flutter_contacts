@@ -1,3 +1,6 @@
+## [0.2.0] - February 19th, 2019
+* **Breaking:** Updated to support AndroidX
+
 ## [0.1.1] - January 11th, 2019
 
 * Added Ability to Share VCF Card (@AppleEducate)
