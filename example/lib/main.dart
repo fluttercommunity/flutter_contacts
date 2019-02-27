@@ -163,22 +163,23 @@ class AddressesTile extends StatelessWidget {
               children: <Widget>[
                 ListTile(
                   title: Text("Street"),
-                  trailing: Text(a.street),
+                  trailing: Text(a.street ?? ""),
                 ),
                 ListTile(
                   title: Text("Postcode"),
-                  trailing: Text(a.postcode),
+                  trailing: Text(a.postcode ?? ""),
                 ),
                 ListTile(
-                  title: Text("City"), trailing: Text(a.city),
+                  title: Text("City"),
+                  trailing: Text(a.city ?? ""),
                 ),
                 ListTile(
                   title: Text("Region"),
-                  trailing: Text(a.region),
+                  trailing: Text(a.region ?? ""),
                 ),
                 ListTile(
                   title: Text("Country"),
-                  trailing: Text(a.country),
+                  trailing: Text(a.country ?? ""),
                 ),
               ],
             ),
