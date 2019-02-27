@@ -26,31 +26,28 @@ class ContactsService {
   /// Deletes the [contact] if it has a valid identifier
   static Future deleteContact(Contact contact) =>
       _channel.invokeMethod('deleteContact', Contact._toMap(contact));
+
+  /// Updates the [contact] if it has a valid identifier
+  static Future updateContact(Contact contact) =>
+      _channel.invokeMethod('updateContact', Contact._toMap(contact));
 }
 
 class Contact {
-  Contact(
-      {this.givenName,
-      this.middleName,
-      this.prefix,
-      this.suffix,
-      this.familyName,
-      this.company,
-      this.jobTitle,
-      this.emails,
-      this.phones,
-      this.postalAddresses,
-      this.avatar});
+  Contact({
+    this.givenName,
+    this.middleName,
+    this.prefix,
+    this.suffix,
+    this.familyName,
+    this.company,
+    this.jobTitle,
+    this.emails,
+    this.phones,
+    this.postalAddresses,
+    this.avatar,
+  });
 
-  String identifier,
-      displayName,
-      givenName,
-      middleName,
-      prefix,
-      suffix,
-      familyName,
-      company,
-      jobTitle;
+  String identifier, displayName, givenName, middleName, prefix, suffix, familyName, company, jobTitle;
   Iterable<Item> emails = [];
   Iterable<Item> phones = [];
   Iterable<PostalAddress> postalAddresses = [];
@@ -105,13 +102,14 @@ class Contact {
 }
 
 class PostalAddress {
-  PostalAddress(
-      {this.label,
-      this.street,
-      this.city,
-      this.postcode,
-      this.region,
-      this.country});
+  PostalAddress({
+    this.label,
+    this.street,
+    this.city,
+    this.postcode,
+    this.region,
+    this.country
+  });
   String label, street, city, postcode, region, country;
 
   PostalAddress.fromMap(Map m) {
@@ -124,13 +122,13 @@ class PostalAddress {
   }
 
   static Map _toMap(PostalAddress address) => {
-        "label": address.label,
-        "street": address.street,
-        "city": address.city,
-        "postcode": address.postcode,
-        "region": address.region,
-        "country": address.country
-      };
+    "label": address.label,
+    "street": address.street,
+    "city": address.city,
+    "postcode": address.postcode,
+    "region": address.region,
+    "country": address.country
+  };
 }
 
 /// Item class used for contact fields which only have a [label] and
