@@ -342,8 +342,7 @@ class _UpdateContactsPageState extends State<UpdateContactsPage> {
               _formKey.currentState.save();
               contact.postalAddresses = [address];
               await ContactsService.updateContact(contact).then((_) {
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
+                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ContactListPage()));
               });
             },
           ),
