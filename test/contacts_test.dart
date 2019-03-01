@@ -57,6 +57,16 @@ void main() {
     ));
     expectMethodCall(log, 'deleteContact');
   });
+
+  test('should update contact', () async {
+    await ContactsService.updateContact(Contact(
+      givenName: 'givenName',
+      emails: [Item(label: 'label')],
+      phones: [Item(label: 'label')],
+      postalAddresses: [PostalAddress(label: 'label')],
+    ));
+    expectMethodCall(log, 'updateContact');
+  });
 }
 
 void expectMethodCall(List<MethodCall> log, String methodName) {

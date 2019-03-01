@@ -32,6 +32,13 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
             else{
                 result(FlutterError(code: "", message: "Failed to delete contact, make sure it has a valid identifier", details: nil))
             }
+        case "updateContact":
+            if(updateContact(dictionary: call.arguments as! [String: Any])) {
+                result(nil)
+            }
+            else {
+                result(FlutterError(code: "", message: "Failed to update contact, make sure it has a valid identifier", details: nil))
+            }
         default:
             result(FlutterMethodNotImplemented)
         }
@@ -115,6 +122,87 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
             }
         }
         catch{
+            print(error.localizedDescription)
+            return false;
+        }
+        return true;
+    }
+    
+    func updateContact(dictionary : [String:Any]) -> Bool{
+        
+        // Check to make sure dictionary has an identifier
+        guard let identifier = dictionary["identifier"] as? String else{
+            return false;
+        }
+        
+        let store = CNContactStore()
+        let keys = [CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
+                    CNContactEmailAddressesKey,
+                    CNContactPhoneNumbersKey,
+                    CNContactFamilyNameKey,
+                    CNContactGivenNameKey,
+                    CNContactMiddleNameKey,
+                    CNContactNamePrefixKey,
+                    CNContactNameSuffixKey,
+                    CNContactPostalAddressesKey,
+                    CNContactOrganizationNameKey,
+                    CNContactJobTitleKey] as [Any]
+        do {
+            // Check if the contact exists
+            if let contact = try store.unifiedContact(withIdentifier: identifier, keysToFetch: keys as! [CNKeyDescriptor]).mutableCopy() as? CNMutableContact{
+                
+                /// Update the contact that was retrieved from the store
+                //Simple fields
+                contact.givenName = dictionary["givenName"] as? String ?? ""
+                contact.familyName = dictionary["familyName"] as? String ?? ""
+                contact.middleName = dictionary["middleName"] as? String ?? ""
+                contact.namePrefix = dictionary["prefix"] as? String ?? ""
+                contact.nameSuffix = dictionary["suffix"] as? String ?? ""
+                contact.organizationName = dictionary["company"] as? String ?? ""
+                contact.jobTitle = dictionary["jobTitle"] as? String ?? ""
+                
+                //Phone numbers
+                if let phoneNumbers = dictionary["phones"] as? [[String:String]]{
+                    var updatedPhoneNumbers = [CNLabeledValue<CNPhoneNumber>]()
+                    for phone in phoneNumbers where phone["value"] != nil {
+                        updatedPhoneNumbers.append(CNLabeledValue(label:getPhoneLabel(label: phone["label"]),value:CNPhoneNumber(stringValue: phone["value"]!)))
+                    }
+                    contact.phoneNumbers = updatedPhoneNumbers
+                }
+                
+                //Emails
+                if let emails = dictionary["emails"] as? [[String:String]]{
+                    var updatedEmails = [CNLabeledValue<NSString>]()
+                    for email in emails where nil != email["value"] {
+                        let emailLabel = email["label"] ?? ""
+                        updatedEmails.append(CNLabeledValue(label: emailLabel, value: email["value"]! as NSString))
+                    }
+                    contact.emailAddresses = updatedEmails
+                }
+                
+                //Postal addresses
+                if let postalAddresses = dictionary["postalAddresses"] as? [[String:String]]{
+                    var updatedPostalAddresses = [CNLabeledValue<CNPostalAddress>]()
+                    for postalAddress in postalAddresses{
+                        let newAddress = CNMutablePostalAddress()
+                        newAddress.street = postalAddress["street"] ?? ""
+                        newAddress.city = postalAddress["city"] ?? ""
+                        newAddress.postalCode = postalAddress["postcode"] ?? ""
+                        newAddress.country = postalAddress["country"] ?? ""
+                        newAddress.state = postalAddress["region"] ?? ""
+                        let label = postalAddress["label"] ?? ""
+                        updatedPostalAddresses.append(CNLabeledValue(label: label, value: newAddress))
+                    }
+                    contact.postalAddresses = updatedPostalAddresses
+                }
+                
+                // Attempt to update the contact
+                let request = CNSaveRequest()
+                request.update(contact)
+                try store.execute(request)
+            }
+        }
+        catch {
             print(error.localizedDescription)
             return false;
         }
