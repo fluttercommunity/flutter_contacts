@@ -51,10 +51,6 @@ await ContactsService.deleteContact(contact);
 
 ![Example](doc/example.gif "Example screenshot")
 
-## Todo
-
-- [ ] update contact
-
 ## Contributions
 
 Contributions are welcome! If you find a bug or want a feature, please fill an issue.
