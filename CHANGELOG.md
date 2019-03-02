@@ -1,7 +1,23 @@
+## [0.2.2] - March 1st, 2019
+
+* **Feature:** Update Contact for iOS & Android
+* Added updateContact method to contacts_service.dart
+* Added updateContact method to SwiftContactsServicePlugin.swift
+* Added unit testing for the updateContact method
+* Fixed formatting discrepancies in the example app (making code easier to read)
+* Fixed formatting discrepancies in contacts_service.dart (making code easier to read)
+* AndroidX compatibility fix for example app
+* Updated example app to show updateContacts method
+* Fixed example app bugs
+* Updated PostalAddress.java and Contact.java (wasn't working properly)
+* Added updateContact method to ContactsServicePlugin.java
+
 ## [0.2.1] - February 21st, 2019
+
 * **Breaking:** Updated dependencies
 
 ## [0.2.0] - February 19th, 2019
+
 * **Breaking:** Updated to support AndroidX
 
 ## [0.1.1] - January 11th, 2019
