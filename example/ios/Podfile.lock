@@ -1,32 +1,38 @@
 PODS:
-  - contacts_service (0.0.1):
+  - contacts_service (0.2.1):
     - Flutter
   - Flutter (1.0.0)
   - path_provider (0.0.1):
+    - Flutter
+  - permission_handler (2.2.0):
     - Flutter
   - share_extend (0.0.1):
     - Flutter
 
 DEPENDENCIES:
-  - contacts_service (from `/Users/developer/Github/flutter_contacts/ios`)
-  - Flutter (from `/Users/developer/flutter/bin/cache/artifacts/engine/ios`)
-  - path_provider (from `/Users/developer/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider-0.4.1/ios`)
-  - share_extend (from `/Users/developer/flutter/.pub-cache/hosted/pub.dartlang.org/share_extend-1.0.3/ios`)
+  - contacts_service (from `/Users/Development/FlutterProjects/contacts_service/master/flutter_contacts/ios`)
+  - Flutter (from `/Users/Development/flutter/bin/cache/artifacts/engine/ios`)
+  - "path_provider (from `/Users/Development/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider-0.5.0+1/ios`)"
+  - permission_handler (from `/Users/Development/flutter/.pub-cache/hosted/pub.dartlang.org/permission_handler-2.2.0/ios`)
+  - share_extend (from `/Users/Development/flutter/.pub-cache/hosted/pub.dartlang.org/share_extend-1.0.4/ios`)
 
 EXTERNAL SOURCES:
   contacts_service:
-    :path: "/Users/developer/Github/flutter_contacts/ios"
+    :path: "/Users/Development/FlutterProjects/contacts_service/master/flutter_contacts/ios"
   Flutter:
-    :path: "/Users/developer/flutter/bin/cache/artifacts/engine/ios"
+    :path: "/Users/Development/flutter/bin/cache/artifacts/engine/ios"
   path_provider:
-    :path: "/Users/developer/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider-0.4.1/ios"
+    :path: "/Users/Development/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider-0.5.0+1/ios"
+  permission_handler:
+    :path: "/Users/Development/flutter/.pub-cache/hosted/pub.dartlang.org/permission_handler-2.2.0/ios"
   share_extend:
-    :path: "/Users/developer/flutter/.pub-cache/hosted/pub.dartlang.org/share_extend-1.0.3/ios"
+    :path: "/Users/Development/flutter/.pub-cache/hosted/pub.dartlang.org/share_extend-1.0.4/ios"
 
 SPEC CHECKSUMS:
-  contacts_service: 3d584b5457e56df4e68608a765b0dfc88b80479c
+  contacts_service: 8b4231a6c81d4a3d1be440105f113158111ff2ff
   Flutter: 9d0fac939486c9aba2809b7982dfdbb47a7b0296
   path_provider: 09407919825bfe3c2deae39453b7a5b44f467873
+  permission_handler: 0b2a5acb642be1ad2406adc31d0cda567b8b01e2
   share_extend: 5c61436f8ad534ac10471cf80c929cc16b226196
 
 PODFILE CHECKSUM: b3f98f39b16cc0a18e5ea9ecbe5cfbc88c2ad26a
