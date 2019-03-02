@@ -13,6 +13,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
+  permission_handler: ^2.2.0
   contacts_service:
     path: ../
 
