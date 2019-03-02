@@ -1,3 +1,8 @@
+## [0.2.3] - March 2nd, 2019
+
+* Added permission handling to example app
+* Fixed build errors for Android & iOS
+
 ## [0.2.2] - March 1st, 2019
 
 * **Feature:** Update Contact for iOS & Android
