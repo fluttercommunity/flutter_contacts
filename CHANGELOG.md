@@ -1,3 +1,8 @@
+## [0.2.4] - March 12th, 2019
+
+* Added support for more phone labels
+* Bug fixes
+
 ## [0.2.3] - March 2nd, 2019
 
 * Added permission handling to example app
