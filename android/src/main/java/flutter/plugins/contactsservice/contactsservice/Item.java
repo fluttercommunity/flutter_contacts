@@ -32,12 +32,22 @@ public class Item{
 
     public static String getPhoneLabel(int type){
         switch (type) {
-            case ContactsContract.CommonDataKinds.Phone.TYPE_HOME:
+            case CommonDataKinds.Phone.TYPE_HOME:
                 return "home";
-            case ContactsContract.CommonDataKinds.Phone.TYPE_WORK:
+            case CommonDataKinds.Phone.TYPE_WORK:
                 return "work";
-            case ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE:
+            case CommonDataKinds.Phone.TYPE_MOBILE:
                 return "mobile";
+            case CommonDataKinds.Phone.TYPE_FAX_WORK:
+                return "fax work";
+            case CommonDataKinds.Phone.TYPE_FAX_HOME:
+                return "fax home";
+            case CommonDataKinds.Phone.TYPE_MAIN:
+                return "main";
+            case CommonDataKinds.Phone.TYPE_COMPANY_MAIN:
+                return "company";
+            case CommonDataKinds.Phone.TYPE_PAGER:
+                return "pager";
             default:
                 return "other";
         }
@@ -63,10 +73,24 @@ public class Item{
     public static int stringToPhoneType(String label) {
         if (label != null) {
             switch (label) {
-                case "home": return CommonDataKinds.Phone.TYPE_HOME;
-                case "work": return CommonDataKinds.Phone.TYPE_WORK;
-                case "mobile": return CommonDataKinds.Phone.TYPE_MOBILE;
-                default: return CommonDataKinds.Phone.TYPE_OTHER;
+                case "home":
+                    return CommonDataKinds.Phone.TYPE_HOME;
+                case "work":
+                    return CommonDataKinds.Phone.TYPE_WORK;
+                case "mobile":
+                    return CommonDataKinds.Phone.TYPE_MOBILE;
+                case "fax work":
+                    return CommonDataKinds.Phone.TYPE_FAX_WORK;
+                case "fax home":
+                    return CommonDataKinds.Phone.TYPE_FAX_HOME;
+                case "main":
+                    return CommonDataKinds.Phone.TYPE_MAIN;
+                case "company":
+                    return CommonDataKinds.Phone.TYPE_COMPANY_MAIN;
+                case "pager":
+                    return CommonDataKinds.Phone.TYPE_PAGER;
+                default:
+                    return CommonDataKinds.Phone.TYPE_OTHER;
             }
         }
         return CommonDataKinds.Phone.TYPE_OTHER;
@@ -75,10 +99,14 @@ public class Item{
     public static int stringToEmailType(String label) {
         if (label != null) {
             switch (label) {
-                case "home": return CommonDataKinds.Email.TYPE_HOME;
-                case "work": return CommonDataKinds.Email.TYPE_WORK;
-                case "mobile": return CommonDataKinds.Email.TYPE_MOBILE;
-                default: return CommonDataKinds.Email.TYPE_OTHER;
+                case "home":
+                    return CommonDataKinds.Email.TYPE_HOME;
+                case "work":
+                    return CommonDataKinds.Email.TYPE_WORK;
+                case "mobile":
+                    return CommonDataKinds.Email.TYPE_MOBILE;
+                default:
+                    return CommonDataKinds.Email.TYPE_OTHER;
             }
         }
         return CommonDataKinds.Email.TYPE_OTHER;

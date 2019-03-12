@@ -304,8 +304,8 @@ public class ContactsServicePlugin implements MethodCallHandler {
 
   private boolean deleteContact(Contact contact){
     ArrayList<ContentProviderOperation> ops = new ArrayList<>();
-    ops.add(ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI)
-            .withSelection(ContactsContract.Data.CONTACT_ID + "=?", new String[]{String.valueOf(contact.identifier)})
+    ops.add(ContentProviderOperation.newDelete(ContactsContract.RawContacts.CONTENT_URI)
+            .withSelection(ContactsContract.RawContacts.CONTACT_ID + "=?", new String[]{String.valueOf(contact.identifier)})
             .build());
     try {
       contentResolver.applyBatch(ContactsContract.AUTHORITY, ops);
