@@ -84,26 +84,20 @@ class _ContactListPageState extends State<ContactListPage> {
       body: SafeArea(
         child: _contacts != null
             ? ListView.builder(
-              itemCount: _contacts?.length ?? 0,
-              itemBuilder: (BuildContext context, int index) {
-                Contact c = _contacts?.elementAt(index);
-                return ListTile(
-                  title: Text(c.displayName ?? ""),
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (BuildContext context) => ContactDetailsPage(c)),
-                    );
-                  },
-                  leading: (c.avatar != null && c.avatar.length > 0)
-                      ? CircleAvatar(
-                          backgroundImage: MemoryImage(c.avatar),
-                        )
-                      : CircleAvatar(
-                          child: Text(c.displayName.length > 1
-                              ? c.displayName?.substring(0, 2)
-                              : ""
-                          ),
-                        ),
+                itemCount: _contacts?.length ?? 0,
+                itemBuilder: (BuildContext context, int index) {
+                  Contact c = _contacts?.elementAt(index);
+                  return ListTile(
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              ContactDetailsPage(c)));
+                    },
+                    leading: (c.avatar != null && c.avatar.length > 0)
+                        ? CircleAvatar(backgroundImage: MemoryImage(c.avatar))
+                        : CircleAvatar(child: Text(c.initials())),
+                    title: Text(c.displayName ?? ""),
+             
                   );
                 },
               )

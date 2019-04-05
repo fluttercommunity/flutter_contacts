@@ -57,6 +57,17 @@ void main() {
     ));
     expectMethodCall(log, 'deleteContact');
   });
+  
+  test('should provide initials for contact', () {
+    Contact contact1 = Contact(givenName: "givenName", familyName: "familyName");
+    Contact contact2 = Contact(givenName: "givenName");
+    Contact contact3 = Contact(familyName: "familyName");
+    Contact contact4 = Contact();
+
+    expect(contact1.initials(), "GF");
+    expect(contact2.initials(), "G");
+    expect(contact3.initials(), "F");
+    expect(contact4.initials(), "");
 
   test('should update contact', () async {
     await ContactsService.updateContact(Contact(
@@ -66,6 +77,7 @@ void main() {
       postalAddresses: [PostalAddress(label: 'label')],
     ));
     expectMethodCall(log, 'updateContact');
+
   });
 }
 
