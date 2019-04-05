@@ -13,7 +13,8 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch call.method {
         case "getContacts":
-            result(getContacts(query: (call.arguments as! String?)))
+            let arguments = call.arguments as! [String:Any]
+            result(getContacts(query: (arguments["query"] as? String), withThumbnails: arguments["withThumbnails"] as! Bool))
         case "addContact":
             let contact = dictionaryToContact(dictionary: call.arguments as! [String : Any])
 
@@ -31,27 +32,46 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
             else{
                 result(FlutterError(code: "", message: "Failed to delete contact, make sure it has a valid identifier", details: nil))
             }
+        case "updateContact":
+            if(updateContact(dictionary: call.arguments as! [String: Any])) {
+                result(nil)
+            }
+            else {
+                result(FlutterError(code: "", message: "Failed to update contact, make sure it has a valid identifier", details: nil))
+            }
         default:
             result(FlutterMethodNotImplemented)
         }
     }
     
-    func getContacts(query : String?) -> [[String:Any]]{
+    func getContacts(query : String?, withThumbnails: Bool) -> [[String:Any]]{
         var contacts : [CNContact] = []
         //Create the store, keys & fetch request
         let store = CNContactStore()
-        let keys = [CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
-                    CNContactEmailAddressesKey,
-                    CNContactPhoneNumbersKey,
-                    CNContactFamilyNameKey,
-                    CNContactGivenNameKey,
-                    CNContactMiddleNameKey,
-                    CNContactNamePrefixKey,
-                    CNContactNameSuffixKey,
-                    CNContactPostalAddressesKey,
-                    CNContactOrganizationNameKey,
-                    CNContactThumbnailImageDataKey,
-                    CNContactJobTitleKey] as [Any]
+        let keys = withThumbnails == true
+            ? [CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
+               CNContactEmailAddressesKey,
+               CNContactPhoneNumbersKey,
+               CNContactFamilyNameKey,
+               CNContactGivenNameKey,
+               CNContactMiddleNameKey,
+               CNContactNamePrefixKey,
+               CNContactNameSuffixKey,
+               CNContactPostalAddressesKey,
+               CNContactOrganizationNameKey,
+               CNContactThumbnailImageDataKey,
+               CNContactJobTitleKey] as [Any]
+            : [CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
+               CNContactEmailAddressesKey,
+               CNContactPhoneNumbersKey,
+               CNContactFamilyNameKey,
+               CNContactGivenNameKey,
+               CNContactMiddleNameKey,
+               CNContactNamePrefixKey,
+               CNContactNameSuffixKey,
+               CNContactPostalAddressesKey,
+               CNContactOrganizationNameKey,
+               CNContactJobTitleKey] as [Any]
         let fetchRequest = CNContactFetchRequest(keysToFetch: keys as! [CNKeyDescriptor])
         // Set the predicate if there is a query
         if let query = query{
@@ -102,6 +122,87 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
             }
         }
         catch{
+            print(error.localizedDescription)
+            return false;
+        }
+        return true;
+    }
+    
+    func updateContact(dictionary : [String:Any]) -> Bool{
+        
+        // Check to make sure dictionary has an identifier
+        guard let identifier = dictionary["identifier"] as? String else{
+            return false;
+        }
+        
+        let store = CNContactStore()
+        let keys = [CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
+                    CNContactEmailAddressesKey,
+                    CNContactPhoneNumbersKey,
+                    CNContactFamilyNameKey,
+                    CNContactGivenNameKey,
+                    CNContactMiddleNameKey,
+                    CNContactNamePrefixKey,
+                    CNContactNameSuffixKey,
+                    CNContactPostalAddressesKey,
+                    CNContactOrganizationNameKey,
+                    CNContactJobTitleKey] as [Any]
+        do {
+            // Check if the contact exists
+            if let contact = try store.unifiedContact(withIdentifier: identifier, keysToFetch: keys as! [CNKeyDescriptor]).mutableCopy() as? CNMutableContact{
+                
+                /// Update the contact that was retrieved from the store
+                //Simple fields
+                contact.givenName = dictionary["givenName"] as? String ?? ""
+                contact.familyName = dictionary["familyName"] as? String ?? ""
+                contact.middleName = dictionary["middleName"] as? String ?? ""
+                contact.namePrefix = dictionary["prefix"] as? String ?? ""
+                contact.nameSuffix = dictionary["suffix"] as? String ?? ""
+                contact.organizationName = dictionary["company"] as? String ?? ""
+                contact.jobTitle = dictionary["jobTitle"] as? String ?? ""
+                
+                //Phone numbers
+                if let phoneNumbers = dictionary["phones"] as? [[String:String]]{
+                    var updatedPhoneNumbers = [CNLabeledValue<CNPhoneNumber>]()
+                    for phone in phoneNumbers where phone["value"] != nil {
+                        updatedPhoneNumbers.append(CNLabeledValue(label:getPhoneLabel(label: phone["label"]),value:CNPhoneNumber(stringValue: phone["value"]!)))
+                    }
+                    contact.phoneNumbers = updatedPhoneNumbers
+                }
+                
+                //Emails
+                if let emails = dictionary["emails"] as? [[String:String]]{
+                    var updatedEmails = [CNLabeledValue<NSString>]()
+                    for email in emails where nil != email["value"] {
+                        let emailLabel = email["label"] ?? ""
+                        updatedEmails.append(CNLabeledValue(label: emailLabel, value: email["value"]! as NSString))
+                    }
+                    contact.emailAddresses = updatedEmails
+                }
+                
+                //Postal addresses
+                if let postalAddresses = dictionary["postalAddresses"] as? [[String:String]]{
+                    var updatedPostalAddresses = [CNLabeledValue<CNPostalAddress>]()
+                    for postalAddress in postalAddresses{
+                        let newAddress = CNMutablePostalAddress()
+                        newAddress.street = postalAddress["street"] ?? ""
+                        newAddress.city = postalAddress["city"] ?? ""
+                        newAddress.postalCode = postalAddress["postcode"] ?? ""
+                        newAddress.country = postalAddress["country"] ?? ""
+                        newAddress.state = postalAddress["region"] ?? ""
+                        let label = postalAddress["label"] ?? ""
+                        updatedPostalAddresses.append(CNLabeledValue(label: label, value: newAddress))
+                    }
+                    contact.postalAddresses = updatedPostalAddresses
+                }
+                
+                // Attempt to update the contact
+                let request = CNSaveRequest()
+                request.update(contact)
+                try store.execute(request)
+            }
+        }
+        catch {
             print(error.localizedDescription)
             return false;
         }
@@ -169,8 +270,10 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
         result["suffix"] = contact.nameSuffix
         result["company"] = contact.organizationName
         result["jobTitle"] = contact.jobTitle
-        if let avatarData = contact.thumbnailImageData {
-            result["avatar"] = FlutterStandardTypedData(bytes: avatarData)
+        if contact.isKeyAvailable(CNContactThumbnailImageDataKey) {
+            if let avatarData = contact.thumbnailImageData {
+                result["avatar"] = FlutterStandardTypedData(bytes: avatarData)
+            }
         }
         
         //Phone numbers

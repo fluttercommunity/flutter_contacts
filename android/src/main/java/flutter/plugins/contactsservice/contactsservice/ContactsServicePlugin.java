@@ -48,7 +48,7 @@ public class ContactsServicePlugin implements MethodCallHandler {
   public void onMethodCall(MethodCall call, Result result) {
     switch(call.method){
       case "getContacts":
-        this.getContacts((String)call.arguments, result);
+        this.getContacts((String)call.argument("query"), (boolean)call.argument("withThumbnails"), result);
         break;
       case "addContact":
         Contact c = Contact.fromMap((HashMap)call.arguments);
@@ -66,8 +66,17 @@ public class ContactsServicePlugin implements MethodCallHandler {
           result.error(null, "Failed to delete the contact, make sure it has a valid identifier", null);
         }
         break;
+      case "updateContact":
+        Contact ct1 = Contact.fromMap((HashMap)call.arguments);
+        if(this.updateContact(ct1)) {
+          result.success(null);
+        } else {
+          result.error(null, "Failed to update the contact, make sure it has a valid identifier", null);
+        }
+        break;
       default:
         result.notImplemented();
+        break;
     }
   }
 
@@ -105,24 +114,28 @@ public class ContactsServicePlugin implements MethodCallHandler {
 
 
   @TargetApi(Build.VERSION_CODES.ECLAIR)
-  private void getContacts(String query, Result result) {
-    new GetContactsTask(result).execute(new String[] {query});
+  private void getContacts(String query, boolean withThumbnails, Result result) {
+    new GetContactsTask(result, withThumbnails).execute(new String[] {query});
   }
 
   @TargetApi(Build.VERSION_CODES.CUPCAKE)
   private class GetContactsTask extends AsyncTask<String, Void, ArrayList<HashMap>> {
 
     private Result getContactResult;
-	
-	public GetContactsTask(Result result){
-		this.getContactResult = result;
-	}	
-  
+    private boolean withThumbnails;
+
+	public GetContactsTask(Result result, boolean withThumbnails){
+	  this.getContactResult = result;
+	  this.withThumbnails = withThumbnails;
+	}
+
     @TargetApi(Build.VERSION_CODES.ECLAIR)
     protected ArrayList<HashMap> doInBackground(String... query) {
       ArrayList<Contact> contacts = getContactsFrom(getCursor(query[0]));
-      for(Contact c : contacts){
-        setAvatarDataForContactIfAvailable(c);
+      if (withThumbnails) {
+        for(Contact c : contacts){
+          setAvatarDataForContactIfAvailable(c);
+        }
       }
       //Transform the list of contacts to a list of Map
       ArrayList<HashMap> contactMaps = new ArrayList<>();
@@ -272,6 +285,7 @@ public class ContactsServicePlugin implements MethodCallHandler {
               .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
               .withValue(ContactsContract.Data.MIMETYPE, CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE)
               .withValue(CommonDataKinds.StructuredPostal.TYPE, PostalAddress.stringToPostalAddressType(address.label))
+              .withValue(CommonDataKinds.StructuredPostal.LABEL, address.label)
               .withValue(CommonDataKinds.StructuredPostal.STREET, address.street)
               .withValue(CommonDataKinds.StructuredPostal.CITY, address.city)
               .withValue(CommonDataKinds.StructuredPostal.REGION, address.region)
@@ -290,9 +304,69 @@ public class ContactsServicePlugin implements MethodCallHandler {
 
   private boolean deleteContact(Contact contact){
     ArrayList<ContentProviderOperation> ops = new ArrayList<>();
-    ops.add(ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI)
-            .withSelection(ContactsContract.Data.CONTACT_ID + "=?", new String[]{String.valueOf(contact.identifier)})
+    ops.add(ContentProviderOperation.newDelete(ContactsContract.RawContacts.CONTENT_URI)
+            .withSelection(ContactsContract.RawContacts.CONTACT_ID + "=?", new String[]{String.valueOf(contact.identifier)})
             .build());
+    try {
+      contentResolver.applyBatch(ContactsContract.AUTHORITY, ops);
+      return true;
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
+  private boolean updateContact(Contact contact) {
+    ArrayList<ContentProviderOperation> ops = new ArrayList<>();
+
+    ContentProviderOperation.Builder operation = ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
+            .withSelection(ContactsContract.Data.CONTACT_ID + "=?" + " AND " + ContactsContract.Data.MIMETYPE + "=?",
+                    new String[]{String.valueOf(contact.identifier), ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE})
+            .withValue(StructuredName.GIVEN_NAME, contact.givenName)
+            .withValue(StructuredName.MIDDLE_NAME, contact.middleName)
+            .withValue(StructuredName.FAMILY_NAME, contact.familyName)
+            .withValue(StructuredName.PREFIX, contact.prefix)
+            .withValue(StructuredName.SUFFIX, contact.suffix);
+    ops.add(operation.build());
+
+    operation = ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
+            .withSelection(ContactsContract.Data.CONTACT_ID + "=?" + " AND " + ContactsContract.Data.MIMETYPE + "=?",
+                    new String[]{String.valueOf(contact.identifier), ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE})
+            .withValue(Organization.COMPANY, contact.company)
+            .withValue(Organization.TITLE, contact.jobTitle);
+    ops.add(operation.build());
+
+    //Phones
+    for(Item phone : contact.phones){
+      operation = ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
+              .withSelection(ContactsContract.Data.CONTACT_ID + "=?" + " AND " + ContactsContract.Data.MIMETYPE + "=?" + " AND " + Phone.TYPE + "=?",
+                      new String[]{String.valueOf(contact.identifier), Phone.CONTENT_ITEM_TYPE, String.valueOf(Item.stringToPhoneType(phone.label))})
+              .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, phone.value);
+      ops.add(operation.build());
+    }
+
+    //Emails
+    for (Item email : contact.emails) {
+      operation = ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
+              .withSelection(ContactsContract.Data.CONTACT_ID + "=?" + " AND " + ContactsContract.Data.MIMETYPE + "=?" + " AND " + Email.TYPE + "=?",
+                      new String[]{String.valueOf(contact.identifier), Email.CONTENT_ITEM_TYPE, String.valueOf(Item.stringToEmailType(email.label))})
+              .withValue(CommonDataKinds.Email.ADDRESS, email.value);
+      ops.add(operation.build());
+    }
+
+    //Postal addresses
+    for (PostalAddress address : contact.postalAddresses) {
+      operation = ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
+              .withSelection(ContactsContract.Data.CONTACT_ID + "=?" + " AND " + ContactsContract.Data.MIMETYPE + "=?" + " AND " + StructuredPostal.TYPE + "=?",
+                      new String[]{String.valueOf(contact.identifier), StructuredPostal.CONTENT_ITEM_TYPE, String.valueOf(PostalAddress.stringToPostalAddressType(address.label))})
+              .withValue(StructuredPostal.LABEL, address.label)
+              .withValue(StructuredPostal.STREET, address.street)
+              .withValue(StructuredPostal.CITY, address.city)
+              .withValue(StructuredPostal.REGION, address.region)
+              .withValue(StructuredPostal.POSTCODE, address.postcode)
+              .withValue(StructuredPostal.COUNTRY, address.country);
+      ops.add(operation.build());
+    }
+
     try {
       contentResolver.applyBatch(ContactsContract.AUTHORITY, ops);
       return true;

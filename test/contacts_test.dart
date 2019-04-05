@@ -68,6 +68,16 @@ void main() {
     expect(contact2.initials(), "G");
     expect(contact3.initials(), "F");
     expect(contact4.initials(), "");
+
+  test('should update contact', () async {
+    await ContactsService.updateContact(Contact(
+      givenName: 'givenName',
+      emails: [Item(label: 'label')],
+      phones: [Item(label: 'label')],
+      postalAddresses: [PostalAddress(label: 'label')],
+    ));
+    expectMethodCall(log, 'updateContact');
+
   });
 }
 
