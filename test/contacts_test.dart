@@ -78,6 +78,85 @@ void main() {
     ));
     expectMethodCall(log, 'updateContact');
 
+
+  test('should show contacts are equal', () {
+    Contact contact1 =
+        Contact(givenName: "givenName", familyName: "familyName", emails: [
+      Item(label: "Home", value: "example@example.com"),
+      Item(label: "Work", value: "example2@example.com"),
+    ]);
+    Contact contact2 =
+        Contact(givenName: "givenName", familyName: "familyName", emails: [
+      Item(label: "Work", value: "example2@example.com"),
+      Item(label: "Home", value: "example@example.com"),
+    ]);
+    expect(contact1 == contact2, true);
+    expect(contact1.hashCode, contact2.hashCode);
+  });
+
+  test('should produce a valid merged contact', () {
+    Contact contact1 =
+        Contact(givenName: "givenName", familyName: "familyName", emails: [
+      Item(label: "Home", value: "home@example.com"),
+      Item(label: "Work", value: "work@example.com"),
+    ], phones: [], postalAddresses: []);
+    Contact contact2 = Contact(familyName: "familyName", phones: [
+      Item(label: "Mobile", value: "111-222-3344")
+    ], emails: [
+      Item(label: "Mobile", value: "mobile@example.com"),
+    ], postalAddresses: [
+      PostalAddress(
+          label: 'Home',
+          street: "1234 Middle-of Rd",
+          city: "Nowhere",
+          postcode: "12345",
+          region: null,
+          country: null)
+    ]);
+    Contact mergedContact =
+        Contact(givenName: "givenName", familyName: "familyName", emails: [
+      Item(label: "Home", value: "home@example.com"),
+      Item(label: "Mobile", value: "mobile@example.com"),
+      Item(label: "Work", value: "work@example.com"),
+    ], phones: [
+      Item(label: "Mobile", value: "111-222-3344")
+    ], postalAddresses: [
+      PostalAddress(
+          label: 'Home',
+          street: "1234 Middle-of Rd",
+          city: "Nowhere",
+          postcode: "12345",
+          region: null,
+          country: null)
+    ]);
+
+    expect(contact1 + contact2, mergedContact);
+  });
+
+  test('should provide a valid merged contact, with no extra info', (){
+    Contact contact1 = Contact(familyName: "familyName");
+    Contact contact2 = Contact();
+    expect(contact1 + contact2, contact1);
+  });
+
+  test('should provide a map of the contact', () {
+    Contact contact = Contact(givenName: "givenName", familyName: "familyName");
+    expect(contact.toMap(), {
+      "identifier": null,
+      "displayName": null,
+      "givenName": "givenName",
+      "middleName": null,
+      "familyName": "familyName",
+      "prefix": null,
+      "suffix": null,
+      "company": null,
+      "jobTitle": null,
+      "emails": [],
+      "phones": [],
+      "postalAddresses": [],
+      "avatar": null,
+      "note": null
+    });
   });
 }
 
@@ -95,6 +174,7 @@ void expectMethodCall(List<MethodCall> log, String methodName) {
         'suffix': null,
         'company': null,
         'jobTitle': null,
+        'note': null,
         'emails': [
           {'label': 'label', 'value': null}
         ],
