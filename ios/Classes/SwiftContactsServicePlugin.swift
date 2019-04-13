@@ -60,7 +60,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
                CNContactPostalAddressesKey,
                CNContactOrganizationNameKey,
                CNContactThumbnailImageDataKey,
-               CNContactNoteKey
+               CNContactNoteKey,
                CNContactJobTitleKey] as [Any]
             : [CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
                CNContactEmailAddressesKey,
@@ -72,7 +72,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
                CNContactNameSuffixKey,
                CNContactPostalAddressesKey,
                CNContactOrganizationNameKey,
-               CNContactNoteKey
+               CNContactNoteKey,
                CNContactJobTitleKey] as [Any]
         let fetchRequest = CNContactFetchRequest(keysToFetch: keys as! [CNKeyDescriptor])
         // Set the predicate if there is a query

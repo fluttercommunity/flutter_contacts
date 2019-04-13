@@ -435,7 +435,7 @@ class _UpdateContactsPageState extends State<UpdateContactsPage> {
                 onSaved: (v) => contact.jobTitle = v,
               ),
               TextFormField(
-                initialValue: contact.note ?? ""
+                initialValue: contact.note ?? "",
                 decoration: const InputDecoration(labelText: 'Note'),
                 onSaved: (v) => contact.note = v,
               ),
