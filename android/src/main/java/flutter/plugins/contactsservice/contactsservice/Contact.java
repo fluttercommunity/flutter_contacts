@@ -47,7 +47,7 @@ public class Contact {
 
         ArrayList<HashMap<String, String>> addressesMap = new ArrayList<>();
         for (PostalAddress address : postalAddresses) {
-            addressesMap.add(address.map);
+            addressesMap.add(address.toMap());
         }
         contactMap.put("postalAddresses", addressesMap);
 
