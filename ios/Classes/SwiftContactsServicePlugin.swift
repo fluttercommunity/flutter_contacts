@@ -148,6 +148,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
                     CNContactNameSuffixKey,
                     CNContactPostalAddressesKey,
                     CNContactOrganizationNameKey,
+                    CNContactNoteKey,
                     CNContactJobTitleKey] as [Any]
         do {
             // Check if the contact exists
@@ -162,6 +163,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
                 contact.nameSuffix = dictionary["suffix"] as? String ?? ""
                 contact.organizationName = dictionary["company"] as? String ?? ""
                 contact.jobTitle = dictionary["jobTitle"] as? String ?? ""
+                contact.note = dictionary["note"] as? String ?? ""
                 
                 //Phone numbers
                 if let phoneNumbers = dictionary["phones"] as? [[String:String]]{
