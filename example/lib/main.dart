@@ -84,26 +84,20 @@ class _ContactListPageState extends State<ContactListPage> {
       body: SafeArea(
         child: _contacts != null
             ? ListView.builder(
-              itemCount: _contacts?.length ?? 0,
-              itemBuilder: (BuildContext context, int index) {
-                Contact c = _contacts?.elementAt(index);
-                return ListTile(
-                  title: Text(c.displayName ?? ""),
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (BuildContext context) => ContactDetailsPage(c)),
-                    );
-                  },
-                  leading: (c.avatar != null && c.avatar.length > 0)
-                      ? CircleAvatar(
-                          backgroundImage: MemoryImage(c.avatar),
-                        )
-                      : CircleAvatar(
-                          child: Text(c.displayName.length > 1
-                              ? c.displayName?.substring(0, 2)
-                              : ""
-                          ),
-                        ),
+                itemCount: _contacts?.length ?? 0,
+                itemBuilder: (BuildContext context, int index) {
+                  Contact c = _contacts?.elementAt(index);
+                  return ListTile(
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              ContactDetailsPage(c)));
+                    },
+                    leading: (c.avatar != null && c.avatar.length > 0)
+                        ? CircleAvatar(backgroundImage: MemoryImage(c.avatar))
+                        : CircleAvatar(child: Text(c.initials())),
+                    title: Text(c.displayName ?? ""),
+             
                   );
                 },
               )
@@ -169,6 +163,10 @@ class ContactDetailsPage extends StatelessWidget {
             ListTile(
               title: Text("Job"),
               trailing: Text(_contact.jobTitle ?? ""),
+            ),
+            ListTile(
+              title: Text("Note"), 
+              trailing: Text(_contact.note ?? ""),
             ),
             AddressesTile(_contact.postalAddresses),
             ItemsTile("Phones", _contact.phones),
@@ -320,6 +318,10 @@ class _AddContactPageState extends State<AddContactPage> {
                 onSaved: (v) => contact.jobTitle = v,
               ),
               TextFormField(
+                decoration: const InputDecoration(labelText: 'Note'),
+                onSaved: (v) => contact.note = v,
+              ),
+              TextFormField(
                 decoration: const InputDecoration(labelText: 'Street'),
                 onSaved: (v) => address.street = v,
               ),
@@ -431,6 +433,11 @@ class _UpdateContactsPageState extends State<UpdateContactsPage> {
                 initialValue: contact.jobTitle ?? "",
                 decoration: const InputDecoration(labelText: 'Job'),
                 onSaved: (v) => contact.jobTitle = v,
+              ),
+              TextFormField(
+                initialValue: contact.note ?? "",
+                decoration: const InputDecoration(labelText: 'Note'),
+                onSaved: (v) => contact.note = v,
               ),
               TextFormField(
                 initialValue: address.street ?? "",
