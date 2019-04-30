@@ -2,7 +2,6 @@ package flutter.plugins.contactsservice.contactsservice;
 
 import android.database.Cursor;
 import android.provider.ContactsContract;
-import android.util.Log;
 
 import static android.provider.ContactsContract.CommonDataKinds;
 
