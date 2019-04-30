@@ -2,6 +2,8 @@ package flutter.plugins.contactsservice.contactsservice;
 
 import android.database.Cursor;
 import android.provider.ContactsContract;
+import android.util.Log;
+
 import static android.provider.ContactsContract.CommonDataKinds;
 
 import java.util.HashMap;
@@ -53,6 +55,21 @@ public class Item{
         }
     }
 
+    public static String getEventLabel(int type, Cursor cursor) {
+        switch (type) {
+            case CommonDataKinds.Event.TYPE_ANNIVERSARY:
+                return "anniversary";
+            case CommonDataKinds.Event.TYPE_BIRTHDAY:
+                return "birthday";
+            case CommonDataKinds.Event.TYPE_OTHER:
+                if (cursor.getString(cursor.getColumnIndex(CommonDataKinds.Event.LABEL)) != null) {
+                    return cursor.getString(cursor.getColumnIndex(CommonDataKinds.Event.LABEL)).toLowerCase();
+                } else return "";
+            default:
+                return "other";
+        }
+    }
+
     public static String getEmailLabel(int type, Cursor cursor) {
         switch (type) {
             case CommonDataKinds.Email.TYPE_HOME:
@@ -64,6 +81,30 @@ public class Item{
             case CommonDataKinds.Email.TYPE_CUSTOM:
                 if (cursor.getString(cursor.getColumnIndex(CommonDataKinds.Email.LABEL)) != null) {
                     return cursor.getString(cursor.getColumnIndex(CommonDataKinds.Email.LABEL)).toLowerCase();
+                } else return "";
+            default:
+                return "other";
+        }
+    }
+
+
+    public static String getWebLabel(int type, Cursor cursor) {
+        switch (type) {
+            case CommonDataKinds.Website.TYPE_HOMEPAGE:
+                return "homepage";
+            case CommonDataKinds.Website.TYPE_BLOG:
+                return "blog";
+            case CommonDataKinds.Website.TYPE_PROFILE:
+                return "profile";
+            case CommonDataKinds.Website.TYPE_HOME:
+                return "home";
+            case CommonDataKinds.Website.TYPE_WORK:
+                return "work";
+            case CommonDataKinds.Website.TYPE_FTP:
+                return "ftp";
+            case CommonDataKinds.Website.TYPE_OTHER:
+                if (cursor.getString(cursor.getColumnIndex(CommonDataKinds.Website.LABEL)) != null) {
+                    return cursor.getString(cursor.getColumnIndex(CommonDataKinds.Website.LABEL)).toLowerCase();
                 } else return "";
             default:
                 return "other";

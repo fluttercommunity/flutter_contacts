@@ -16,6 +16,8 @@ public class Contact {
     String displayName, givenName, middleName, familyName, prefix, suffix, company, jobTitle, note;
     ArrayList<Item> emails = new ArrayList<>();
     ArrayList<Item> phones = new ArrayList<>();
+    ArrayList<Item> webs = new ArrayList<>();
+    ArrayList<Item> events = new ArrayList<>();
     ArrayList<PostalAddress> postalAddresses = new ArrayList<>();
     byte[] avatar = new byte[0];
 
@@ -50,6 +52,18 @@ public class Contact {
             addressesMap.add(address.toMap());
         }
         contactMap.put("postalAddresses", addressesMap);
+
+        ArrayList<HashMap<String, String>> websMap = new ArrayList<>();
+        for (Item web : webs) {
+            websMap.add(web.toMap());
+        }
+        contactMap.put("webs", websMap);
+
+        ArrayList<HashMap<String, String>> eventsMap = new ArrayList<>();
+        for (Item event : events) {
+            eventsMap.add(event.toMap());
+        }
+        contactMap.put("events", eventsMap);
 
         return contactMap;
     }
@@ -86,6 +100,21 @@ public class Contact {
                 contact.postalAddresses.add(PostalAddress.fromMap(postalAddress));
             }
         }
+
+        ArrayList<HashMap> webs = (ArrayList<HashMap>) map.get("webs");
+        if (webs != null) {
+            for (HashMap web : webs) {
+                contact.webs.add(Item.fromMap(web));
+            }
+        }
+
+        ArrayList<HashMap> events = (ArrayList<HashMap>) map.get("event");
+        if (webs != null) {
+            for (HashMap event : events) {
+                contact.events.add(Item.fromMap(event));
+            }
+        }
+
         return contact;
     }
 }
