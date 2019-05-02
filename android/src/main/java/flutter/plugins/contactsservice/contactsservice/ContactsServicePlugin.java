@@ -92,10 +92,6 @@ public class ContactsServicePlugin implements MethodCallHandler {
       StructuredName.PREFIX,
       StructuredName.SUFFIX,
             CommonDataKinds.Note.NOTE,
-            CommonDataKinds.Website.URL,
-            CommonDataKinds.Website.TYPE,
-            CommonDataKinds.Event.START_DATE,
-            CommonDataKinds.Event.TYPE,
       Phone.NUMBER,
       Phone.TYPE,
       Phone.LABEL,
@@ -157,7 +153,7 @@ public class ContactsServicePlugin implements MethodCallHandler {
   }
 
   private Cursor getCursor(String query){
-    String selection = ContactsContract.Data.MIMETYPE + "=? OR " + ContactsContract.Data.MIMETYPE + "=? OR " + ContactsContract.Data.MIMETYPE + "=? OR " + ContactsContract.Data.MIMETYPE + "=? OR " + ContactsContract.Data.MIMETYPE + "=? OR " + ContactsContract.Data.MIMETYPE + "=? OR " + ContactsContract.Data.MIMETYPE + "=? OR " + ContactsContract.Data.MIMETYPE + "=?";
+    String selection = ContactsContract.Data.MIMETYPE + "=? OR " + ContactsContract.Data.MIMETYPE + "=? OR " + ContactsContract.Data.MIMETYPE + "=? OR " + ContactsContract.Data.MIMETYPE + "=? OR " + ContactsContract.Data.MIMETYPE + "=? OR " + ContactsContract.Data.MIMETYPE + "=?";
     String[] selectionArgs = new String[]{
             CommonDataKinds.Note.CONTENT_ITEM_TYPE,
             Email.CONTENT_ITEM_TYPE,
@@ -165,8 +161,6 @@ public class ContactsServicePlugin implements MethodCallHandler {
             StructuredName.CONTENT_ITEM_TYPE,
             Organization.CONTENT_ITEM_TYPE,
             StructuredPostal.CONTENT_ITEM_TYPE,
-            CommonDataKinds.Website.CONTENT_ITEM_TYPE,
-            CommonDataKinds.Event.CONTENT_ITEM_TYPE
     };
     if(query != null){
       selectionArgs = new String[]{"%" + query + "%"};
@@ -231,22 +225,6 @@ public class ContactsServicePlugin implements MethodCallHandler {
       //ADDRESSES
       else if (mimeType.equals(CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE)) {
         contact.postalAddresses.add(new PostalAddress(cursor));
-      }
-      //WEBS
-      else if (mimeType.equals(CommonDataKinds.Website.CONTENT_ITEM_TYPE)) {
-        String webUrl = cursor.getString(cursor.getColumnIndex(CommonDataKinds.Website.URL));
-        int type = cursor.getInt(cursor.getColumnIndex(CommonDataKinds.Website.TYPE));
-        if (!TextUtils.isEmpty(webUrl)) {
-          contact.webs.add(new Item(Item.getWebLabel(type, cursor),webUrl));
-        }
-      }
-      //EVENTS
-      else if (mimeType.equals(CommonDataKinds.Event.CONTENT_ITEM_TYPE)) {
-        String startDate = cursor.getString(cursor.getColumnIndex(CommonDataKinds.Event.START_DATE));
-        int type = cursor.getInt(cursor.getColumnIndex(CommonDataKinds.Event.TYPE));
-        if (!TextUtils.isEmpty(startDate)) {
-          contact.events.add(new Item(Item.getEventLabel(type, cursor),startDate));
-        }
       }
     }
     return new ArrayList<>(map.values());

@@ -1,22 +1,3 @@
-## [0.2.5] - April 20th, 2019
-
-* Added Notes support, and updateContact for Android fix
-* Added Note support for iOS
-* Added public method to convert contact to map using the static _toMap
-* Updated tests
-* Updated example app
-* Bug fixes
-
-## [0.2.4] - March 12th, 2019
-
-* Added support for more phone labels
-* Bug fixes
-
-## [0.2.3] - March 2nd, 2019
-
-* Added permission handling to example app
-* Fixed build errors for Android & iOS
-
 ## [0.2.2] - March 1st, 2019
 
 * **Feature:** Update Contact for iOS & Android

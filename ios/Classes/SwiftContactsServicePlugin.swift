@@ -61,9 +61,6 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
                CNContactOrganizationNameKey,
                CNContactThumbnailImageDataKey,
                CNContactNoteKey,
-               CNContactUrlAddressesKey,
-               CNContactBirthdayKey,
-               CNContactDatesKey,
                CNContactJobTitleKey] as [Any]
             : [CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
                CNContactEmailAddressesKey,
@@ -76,9 +73,6 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
                CNContactPostalAddressesKey,
                CNContactOrganizationNameKey,
                CNContactNoteKey,
-               CNContactUrlAddressesKey,
-               CNContactBirthdayKey,
-               CNContactDatesKey,
                CNContactJobTitleKey] as [Any]
         let fetchRequest = CNContactFetchRequest(keysToFetch: keys as! [CNKeyDescriptor])
         // Set the predicate if there is a query
@@ -331,44 +325,6 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
             postalAddresses.append(addressDictionary)
         }
         result["postalAddresses"] = postalAddresses
-        
-        //Emails
-        var urlAddresses = [[String:String]]()
-        for url in contact.urlAddresses{
-            var urlDictionary = [String:String]()
-            urlDictionary["value"] = String(url.value)
-            urlDictionary["label"] = "other"
-            if let label = url.label{
-                urlDictionary["label"] = CNLabeledValue<NSString>.localizedString(forLabel: label)
-            }
-            urlAddresses.append(urlDictionary)
-        }
-        result["webs"] = urlAddresses
-        
-        let df = DateFormatter()
-        df.dateFormat = "yyyy-MM-dd"
-        
-        //Events
-        var events = [[String:String]]()
-        for event in contact.dates{
-            var eventDictionary = [String:String]()
-            if let date = event.value.date {
-                eventDictionary["value"] = df.string(from: date)
-            }
-            eventDictionary["label"] = "other"
-            if let label = event.label{
-                eventDictionary["label"] = CNLabeledValue<NSString>.localizedString(forLabel: label)
-            }
-            events.append(eventDictionary)
-        }
-        
-        if let birthday = contact.birthday?.date {
-           var eventDictionary = [String:String]()
-            eventDictionary["label"] = "birthday"
-            eventDictionary["value"] = df.string(from: birthday)
-            events.append(eventDictionary)
-        }
-        result["events"] = events
         
         return result
     }
