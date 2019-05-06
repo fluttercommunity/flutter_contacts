@@ -8,53 +8,61 @@ import 'package:quiver/core.dart';
 export 'share.dart';
 
 class ContactsService {
-  static const MethodChannel _channel = MethodChannel('github.com/clovisnicolas/flutter_contacts');
+  static const MethodChannel _channel =
+  MethodChannel('github.com/clovisnicolas/flutter_contacts');
 
   /// Fetches all contacts, or when specified, the contacts with a name
   /// matching [query]
   static Future<Iterable<Contact>> getContacts({String query, bool withThumbnails = true}) async {
-    Iterable contacts = await _channel.invokeMethod('getContacts', <String, dynamic>{'query': query, 'withThumbnails': withThumbnails});
+    Iterable contacts = await _channel.invokeMethod('getContacts', <String, dynamic> {
+      'query': query,
+      'withThumbnails': withThumbnails
+    });
     return contacts.map((m) => Contact.fromMap(m));
   }
 
   /// Adds the [contact] to the device contact list
-  static Future addContact(Contact contact) => _channel.invokeMethod('addContact', Contact._toMap(contact));
+  static Future addContact(Contact contact) =>
+      _channel.invokeMethod('addContact', Contact._toMap(contact));
 
   /// Deletes the [contact] if it has a valid identifier
-  static Future deleteContact(Contact contact) => _channel.invokeMethod('deleteContact', Contact._toMap(contact));
+  static Future deleteContact(Contact contact) =>
+      _channel.invokeMethod('deleteContact', Contact._toMap(contact));
 
   /// Updates the [contact] if it has a valid identifier
-  static Future updateContact(Contact contact) => _channel.invokeMethod('updateContact', Contact._toMap(contact));
+  static Future updateContact(Contact contact) =>
+      _channel.invokeMethod('updateContact', Contact._toMap(contact));
 }
 
 class Contact {
-  Contact(
-      {this.givenName,
-      this.middleName,
-      this.prefix,
-      this.suffix,
-      this.familyName,
-      this.company,
-      this.jobTitle,
-      this.emails,
-      this.phones,
-      this.postalAddresses,
-      this.avatar,
-      this.note,
-      this.webs,
-      this.events});
+  Contact({
+    this.givenName,
+    this.middleName,
+    this.prefix,
+    this.suffix,
+    this.familyName,
+    this.company,
+    this.jobTitle,
+    this.emails,
+    this.phones,
+    this.postalAddresses,
+    this.avatar,
+    this.note
+  });
 
   String identifier, displayName, givenName, middleName, prefix, suffix, familyName, company, jobTitle, note;
   Iterable<Item> emails = [];
   Iterable<Item> phones = [];
-  Iterable<Item> webs = [];
-  Iterable<Item> events = [];
   Iterable<PostalAddress> postalAddresses = [];
   Uint8List avatar;
 
   String initials() {
-    return ((this.givenName?.isNotEmpty == true ? this.givenName[0] : "") + (this.familyName?.isNotEmpty == true ? this.familyName[0] : ""))
-        .toUpperCase();
+    return ((this.givenName?.isNotEmpty == true
+        ? this.givenName[0]
+        : "") +
+        (this.familyName?.isNotEmpty == true
+            ? this.familyName[0]
+            : "")).toUpperCase();
   }
 
   Contact.fromMap(Map m) {
@@ -69,11 +77,10 @@ class Contact {
     jobTitle = m["jobTitle"];
     emails = (m["emails"] as Iterable)?.map((m) => Item.fromMap(m));
     phones = (m["phones"] as Iterable)?.map((m) => Item.fromMap(m));
-    postalAddresses = (m["postalAddresses"] as Iterable)?.map((m) => PostalAddress.fromMap(m));
+    postalAddresses = (m["postalAddresses"] as Iterable)
+        ?.map((m) => PostalAddress.fromMap(m));
     avatar = m["avatar"];
     note = m["note"];
-    webs = (m["webs"] as Iterable)?.map((m) => Item.fromMap(m));
-    events = (m["events"] as Iterable)?.map((m) => Item.fromMap(m));
   }
 
   static Map _toMap(Contact contact) {
@@ -89,14 +96,6 @@ class Contact {
     for (PostalAddress address in contact.postalAddresses ?? []) {
       postalAddresses.add(PostalAddress._toMap(address));
     }
-    var webs = [];
-    for (Item web in contact.webs ?? []) {
-      webs.add(Item._toMap(web));
-    }
-    var events = [];
-    for (Item event in contact.events ?? []) {
-      events.add(Item._toMap(event));
-    }
     return {
       "identifier": contact.identifier,
       "displayName": contact.displayName,
@@ -111,9 +110,7 @@ class Contact {
       "phones": phones,
       "postalAddresses": postalAddresses,
       "avatar": contact.avatar,
-      "note": contact.note,
-      "webs": webs,
-      "events": events
+      "note": contact.note
     };
   }
 
@@ -131,14 +128,20 @@ class Contact {
       company: this.company ?? other.company,
       jobTitle: this.jobTitle ?? other.jobTitle,
       note: this.note ?? other.note,
-      emails: this.emails == null ? other.emails : this.emails.toSet().union(other.emails?.toSet() ?? Set()).toList(),
-      phones: this.phones == null ? other.phones : this.phones.toSet().union(other.phones?.toSet() ?? Set()).toList(),
+      emails: this.emails == null
+          ? other.emails
+          : this.emails.toSet().union(other.emails?.toSet() ?? Set()).toList(),
+      phones: this.phones == null
+          ? other.phones
+          : this.phones.toSet().union(other.phones?.toSet() ?? Set()).toList(),
       postalAddresses: this.postalAddresses == null
           ? other.postalAddresses
-          : this.postalAddresses.toSet().union(other.postalAddresses?.toSet() ?? Set()).toList(),
-      avatar: this.avatar ?? other.avatar,
-      webs: this.webs == null ? other.webs : this.webs.toSet().union(other.webs?.toSet() ?? Set()).toList(),
-      events: this.events == null ? other.events : this.events.toSet().union(other.events?.toSet() ?? Set()).toList());
+          : this
+          .postalAddresses
+          .toSet()
+          .union(other.postalAddresses?.toSet() ?? Set())
+          .toList(),
+      avatar: this.avatar ?? other.avatar);
 
   /// Returns true if all items in this contact are identical.
   @override
@@ -157,9 +160,8 @@ class Contact {
         this.suffix == other.suffix &&
         DeepCollectionEquality.unordered().equals(this.phones, other.phones) &&
         DeepCollectionEquality.unordered().equals(this.emails, other.emails) &&
-        DeepCollectionEquality.unordered().equals(this.postalAddresses, other.postalAddresses) &&
-        DeepCollectionEquality.unordered().equals(this.webs, other.webs) &&
-        DeepCollectionEquality.unordered().equals(this.events, other.events);
+        DeepCollectionEquality.unordered()
+            .equals(this.postalAddresses, other.postalAddresses);
   }
 
   @override
@@ -180,7 +182,14 @@ class Contact {
 }
 
 class PostalAddress {
-  PostalAddress({this.label, this.street, this.city, this.postcode, this.region, this.country});
+  PostalAddress({
+    this.label,
+    this.street,
+    this.city,
+    this.postcode,
+    this.region,
+    this.country
+  });
   String label, street, city, postcode, region, country;
 
   PostalAddress.fromMap(Map m) {
@@ -216,13 +225,13 @@ class PostalAddress {
   }
 
   static Map _toMap(PostalAddress address) => {
-        "label": address.label,
-        "street": address.street,
-        "city": address.city,
-        "postcode": address.postcode,
-        "region": address.region,
-        "country": address.country
-      };
+    "label": address.label,
+    "street": address.street,
+    "city": address.city,
+    "postcode": address.postcode,
+    "region": address.region,
+    "country": address.country
+  };
 }
 
 /// Item class used for contact fields which only have a [label] and
@@ -239,7 +248,9 @@ class Item {
 
   @override
   bool operator ==(Object other) {
-    return other is Item && this.label == other.label && this.value == other.value;
+    return other is Item &&
+        this.label == other.label &&
+        this.value == other.value;
   }
 
   @override
