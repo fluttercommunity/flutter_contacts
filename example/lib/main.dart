@@ -84,23 +84,23 @@ class _ContactListPageState extends State<ContactListPage> {
       body: SafeArea(
         child: _contacts != null
             ? ListView.builder(
-                itemCount: _contacts?.length ?? 0,
-                itemBuilder: (BuildContext context, int index) {
-                  Contact c = _contacts?.elementAt(index);
-                  return ListTile(
-                    onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              ContactDetailsPage(c)));
-                    },
-                    leading: (c.avatar != null && c.avatar.length > 0)
-                        ? CircleAvatar(backgroundImage: MemoryImage(c.avatar))
-                        : CircleAvatar(child: Text(c.initials())),
-                    title: Text(c.displayName ?? ""),
-             
-                  );
-                },
-              )
+          itemCount: _contacts?.length ?? 0,
+          itemBuilder: (BuildContext context, int index) {
+            Contact c = _contacts?.elementAt(index);
+            return ListTile(
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (BuildContext context) =>
+                        ContactDetailsPage(c)));
+              },
+              leading: (c.avatar != null && c.avatar.length > 0)
+                  ? CircleAvatar(backgroundImage: MemoryImage(c.avatar))
+                  : CircleAvatar(child: Text(c.initials())),
+              title: Text(c.displayName ?? ""),
+
+            );
+          },
+        )
             : Center(child: CircularProgressIndicator(),),
       ),
     );
@@ -117,10 +117,10 @@ class ContactDetailsPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(_contact.displayName ?? ""),
         actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.share),
-            onPressed: () => shareVCFCard(context, contact: _contact),
-          ),
+//          IconButton(
+//            icon: Icon(Icons.share),
+//            onPressed: () => shareVCFCard(context, contact: _contact),
+//          ),
           IconButton(
             icon: Icon(Icons.delete),
             onPressed: () => ContactsService.deleteContact(_contact),
@@ -165,7 +165,7 @@ class ContactDetailsPage extends StatelessWidget {
               trailing: Text(_contact.jobTitle ?? ""),
             ),
             ListTile(
-              title: Text("Note"), 
+              title: Text("Note"),
               trailing: Text(_contact.note ?? ""),
             ),
             AddressesTile(_contact.postalAddresses),
@@ -471,4 +471,3 @@ class _UpdateContactsPageState extends State<UpdateContactsPage> {
     );
   }
 }
-

@@ -81,37 +81,37 @@ public class ContactsServicePlugin implements MethodCallHandler {
   }
 
   private static final String[] PROJECTION =
-    {
-      ContactsContract.Data.CONTACT_ID,
-      ContactsContract.Profile.DISPLAY_NAME,
-      ContactsContract.Contacts.Data.MIMETYPE,
-      StructuredName.DISPLAY_NAME,
-      StructuredName.GIVEN_NAME,
-      StructuredName.MIDDLE_NAME,
-      StructuredName.FAMILY_NAME,
-      StructuredName.PREFIX,
-      StructuredName.SUFFIX,
-            CommonDataKinds.Note.NOTE,
-      Phone.NUMBER,
-      Phone.TYPE,
-      Phone.LABEL,
-      Email.DATA,
-      Email.ADDRESS,
-      Email.TYPE,
-      Email.LABEL,
-      Organization.COMPANY,
-      Organization.TITLE,
-      StructuredPostal.FORMATTED_ADDRESS,
-      StructuredPostal.TYPE,
-      StructuredPostal.LABEL,
-      StructuredPostal.STREET,
-      StructuredPostal.POBOX,
-      StructuredPostal.NEIGHBORHOOD,
-      StructuredPostal.CITY,
-      StructuredPostal.REGION,
-      StructuredPostal.POSTCODE,
-      StructuredPostal.COUNTRY,
-    };
+          {
+                  ContactsContract.Data.CONTACT_ID,
+                  ContactsContract.Profile.DISPLAY_NAME,
+                  ContactsContract.Contacts.Data.MIMETYPE,
+                  StructuredName.DISPLAY_NAME,
+                  StructuredName.GIVEN_NAME,
+                  StructuredName.MIDDLE_NAME,
+                  StructuredName.FAMILY_NAME,
+                  StructuredName.PREFIX,
+                  StructuredName.SUFFIX,
+                  CommonDataKinds.Note.NOTE,
+                  Phone.NUMBER,
+                  Phone.TYPE,
+                  Phone.LABEL,
+                  Email.DATA,
+                  Email.ADDRESS,
+                  Email.TYPE,
+                  Email.LABEL,
+                  Organization.COMPANY,
+                  Organization.TITLE,
+                  StructuredPostal.FORMATTED_ADDRESS,
+                  StructuredPostal.TYPE,
+                  StructuredPostal.LABEL,
+                  StructuredPostal.STREET,
+                  StructuredPostal.POBOX,
+                  StructuredPostal.NEIGHBORHOOD,
+                  StructuredPostal.CITY,
+                  StructuredPostal.REGION,
+                  StructuredPostal.POSTCODE,
+                  StructuredPostal.COUNTRY,
+          };
 
 
   @TargetApi(Build.VERSION_CODES.ECLAIR)
@@ -125,10 +125,10 @@ public class ContactsServicePlugin implements MethodCallHandler {
     private Result getContactResult;
     private boolean withThumbnails;
 
-	public GetContactsTask(Result result, boolean withThumbnails){
-	  this.getContactResult = result;
-	  this.withThumbnails = withThumbnails;
-	}
+    public GetContactsTask(Result result, boolean withThumbnails){
+      this.getContactResult = result;
+      this.withThumbnails = withThumbnails;
+    }
 
     @TargetApi(Build.VERSION_CODES.ECLAIR)
     protected ArrayList<HashMap> doInBackground(String... query) {

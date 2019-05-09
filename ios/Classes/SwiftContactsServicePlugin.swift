@@ -96,7 +96,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
         }
         return result
     }
-    
+
     func addContact(contact : CNMutableContact) -> String {
         let store = CNContactStore()
         do {
@@ -109,7 +109,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
         }
         return ""
     }
-    
+
     func deleteContact(dictionary : [String:Any]) -> Bool{
         guard let identifier = dictionary["identifier"] as? String else{
             return false;
@@ -129,14 +129,14 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
         }
         return true;
     }
-    
+
     func updateContact(dictionary : [String:Any]) -> Bool{
-        
+
         // Check to make sure dictionary has an identifier
         guard let identifier = dictionary["identifier"] as? String else{
             return false;
         }
-        
+
         let store = CNContactStore()
         let keys = [CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
                     CNContactEmailAddressesKey,
@@ -153,7 +153,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
         do {
             // Check if the contact exists
             if let contact = try store.unifiedContact(withIdentifier: identifier, keysToFetch: keys as! [CNKeyDescriptor]).mutableCopy() as? CNMutableContact{
-                
+
                 /// Update the contact that was retrieved from the store
                 //Simple fields
                 contact.givenName = dictionary["givenName"] as? String ?? ""
@@ -164,7 +164,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
                 contact.organizationName = dictionary["company"] as? String ?? ""
                 contact.jobTitle = dictionary["jobTitle"] as? String ?? ""
                 contact.note = dictionary["note"] as? String ?? ""
-                
+
                 //Phone numbers
                 if let phoneNumbers = dictionary["phones"] as? [[String:String]]{
                     var updatedPhoneNumbers = [CNLabeledValue<CNPhoneNumber>]()
@@ -173,7 +173,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
                     }
                     contact.phoneNumbers = updatedPhoneNumbers
                 }
-                
+
                 //Emails
                 if let emails = dictionary["emails"] as? [[String:String]]{
                     var updatedEmails = [CNLabeledValue<NSString>]()
@@ -183,7 +183,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
                     }
                     contact.emailAddresses = updatedEmails
                 }
-                
+
                 //Postal addresses
                 if let postalAddresses = dictionary["postalAddresses"] as? [[String:String]]{
                     var updatedPostalAddresses = [CNLabeledValue<CNPostalAddress>]()
@@ -199,7 +199,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
                     }
                     contact.postalAddresses = updatedPostalAddresses
                 }
-                
+
                 // Attempt to update the contact
                 let request = CNSaveRequest()
                 request.update(contact)
@@ -212,7 +212,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
         }
         return true;
     }
-    
+
     func dictionaryToContact(dictionary : [String:Any]) -> CNMutableContact{
         let contact = CNMutableContact()
 
@@ -260,11 +260,11 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
 
         return contact
     }
-    
+
     func contactToDictionary(contact: CNContact) -> [String:Any]{
-        
+
         var result = [String:Any]()
-        
+
         //Simple fields
         result["identifier"] = contact.identifier
         result["displayName"] = CNContactFormatter.string(from: contact, style: CNContactFormatterStyle.fullName)
@@ -281,7 +281,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
                 result["avatar"] = FlutterStandardTypedData(bytes: avatarData)
             }
         }
-        
+
         //Phone numbers
         var phoneNumbers = [[String:String]]()
         for phone in contact.phoneNumbers{
@@ -294,7 +294,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
             phoneNumbers.append(phoneDictionary)
         }
         result["phones"] = phoneNumbers
-        
+
         //Emails
         var emailAddresses = [[String:String]]()
         for email in contact.emailAddresses{
@@ -307,7 +307,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
             emailAddresses.append(emailDictionary)
         }
         result["emails"] = emailAddresses
-        
+
         //Postal addresses
         var postalAddresses = [[String:String]]()
         for address in contact.postalAddresses{
@@ -321,14 +321,14 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
             addressDictionary["postcode"] = address.value.postalCode
             addressDictionary["region"] = address.value.state
             addressDictionary["country"] = address.value.country
-            
+
             postalAddresses.append(addressDictionary)
         }
         result["postalAddresses"] = postalAddresses
-        
+
         return result
     }
-    
+
     func getPhoneLabel(label: String?) -> String{
         let labelValue = label ?? ""
         switch(labelValue){
@@ -338,5 +338,5 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
         default: return labelValue
         }
     }
-    
+
 }

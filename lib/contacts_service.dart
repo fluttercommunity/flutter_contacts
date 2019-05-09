@@ -9,7 +9,7 @@ export 'share.dart';
 
 class ContactsService {
   static const MethodChannel _channel =
-      MethodChannel('github.com/clovisnicolas/flutter_contacts');
+  MethodChannel('github.com/clovisnicolas/flutter_contacts');
 
   /// Fetches all contacts, or when specified, the contacts with a name
   /// matching [query]
@@ -55,14 +55,14 @@ class Contact {
   Iterable<Item> phones = [];
   Iterable<PostalAddress> postalAddresses = [];
   Uint8List avatar;
-  
+
   String initials() {
     return ((this.givenName?.isNotEmpty == true
-                                      ? this.givenName[0]
-                                      : "") +
-                                  (this.familyName?.isNotEmpty == true
-                                      ? this.familyName[0]
-                                      : "")).toUpperCase();
+        ? this.givenName[0]
+        : "") +
+        (this.familyName?.isNotEmpty == true
+            ? this.familyName[0]
+            : "")).toUpperCase();
   }
 
   Contact.fromMap(Map m) {
@@ -137,10 +137,10 @@ class Contact {
       postalAddresses: this.postalAddresses == null
           ? other.postalAddresses
           : this
-              .postalAddresses
-              .toSet()
-              .union(other.postalAddresses?.toSet() ?? Set())
-              .toList(),
+          .postalAddresses
+          .toSet()
+          .union(other.postalAddresses?.toSet() ?? Set())
+          .toList(),
       avatar: this.avatar ?? other.avatar);
 
   /// Returns true if all items in this contact are identical.
