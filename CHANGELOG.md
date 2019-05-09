@@ -1,3 +1,9 @@
+## [0.2.6] - May 9th, 2019
+
+* Removed share_extend
+* Updated example app
+* Bug fixes
+
 ## [0.2.5] - April 20th, 2019
 
 * Added Notes support, and updateContact for Android fix
