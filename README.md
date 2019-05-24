@@ -90,16 +90,16 @@ Uint8List avatar;
   
 ![Example](doc/example.gif "Example screenshot")  
   
-## Todo  
-  
-- [ ] update contact image 
-  
-## Contributions  
-  
-Contributions are welcome! If you find a bug or want a feature, please fill an issue.  
-  
-If you want to contribute code please create a pull request.  
-  
-## Credits  
-  
+## Todo
+
+- [ ] update contact image
+
+## Contributions
+
+Contributions are welcome! If you find a bug or want a feature, please fill an issue.
+
+If you want to contribute code please create a pull request under the staging branch.
+
+## Credits
+
 Heavily inspired from rt2zz's react native [plugin](https://github.com/rt2zz/react-native-contacts)
