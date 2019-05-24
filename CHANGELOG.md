@@ -1,3 +1,7 @@
+## [0.2.7] - May 24th, 2019
+
+* Removed path_provider
+
 ## [0.2.6] - May 9th, 2019
 
 * Removed share_extend
