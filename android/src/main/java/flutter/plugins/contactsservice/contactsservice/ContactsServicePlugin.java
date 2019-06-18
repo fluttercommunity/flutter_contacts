@@ -284,7 +284,7 @@ public class ContactsServicePlugin implements MethodCallHandler {
               .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
               .withValue(ContactsContract.Data.MIMETYPE, CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
               .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, phone.value)
-              .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, Phone.TYPE_CUSTOM)
+              .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.BaseTypes.TYPE_CUSTOM)
               .withValue(ContactsContract.CommonDataKinds.Phone.LABEL, Item.stringToPhoneType(phone.label));
       ops.add(op.build());
     }
@@ -395,8 +395,8 @@ public class ContactsServicePlugin implements MethodCallHandler {
               .withValue(ContactsContract.Data.MIMETYPE, CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
               .withValue(ContactsContract.Data.RAW_CONTACT_ID, contact.identifier)
               .withValue(Phone.NUMBER, phone.value)
-              .withValue(Phone.TYPE, Phone.TYPE_CUSTOM)
-              .withValue(Phone.LABEL, Item.stringToPhoneType(phone.label));
+              .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.BaseTypes.TYPE_CUSTOM)
+              .withValue(ContactsContract.CommonDataKinds.Phone.LABEL, Item.stringToPhoneType(phone.label));
       ops.add(op.build());
     }
 
