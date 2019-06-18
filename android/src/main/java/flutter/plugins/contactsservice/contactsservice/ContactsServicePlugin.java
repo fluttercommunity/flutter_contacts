@@ -422,9 +422,14 @@ public class ContactsServicePlugin implements MethodCallHandler {
       op = ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
               .withValue(ContactsContract.Data.MIMETYPE, CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
               .withValue(ContactsContract.Data.RAW_CONTACT_ID, contact.identifier)
-              .withValue(Phone.NUMBER, phone.value)
-              .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.BaseTypes.TYPE_CUSTOM)
-              .withValue(ContactsContract.CommonDataKinds.Phone.LABEL, Item.stringToPhoneType(phone.label));
+              .withValue(Phone.NUMBER, phone.value);
+
+      if (Item.stringToPhoneType(phone.label) == ContactsContract.CommonDataKinds.Phone.TYPE_CUSTOM){
+        op.withValue( ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.BaseTypes.TYPE_CUSTOM );
+        op.withValue(ContactsContract.CommonDataKinds.Phone.LABEL, phone.label);
+      } else
+        op.withValue( ContactsContract.CommonDataKinds.Phone.TYPE, Item.stringToPhoneType(phone.label) );
+
       ops.add(op.build());
     }
 
