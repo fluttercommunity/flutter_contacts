@@ -276,6 +276,14 @@ public class ContactsServicePlugin implements MethodCallHandler {
             .withValue(Organization.TITLE, contact.jobTitle);
     ops.add(op.build());
 
+    //Photo
+    op = ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+            .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+            .withValue(ContactsContract.Data.IS_SUPER_PRIMARY, 1)
+            .withValue(ContactsContract.CommonDataKinds.Photo.PHOTO, contact.avatar)
+            .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE);
+    ops.add(op.build());
+
     op.withYieldAllowed(true);
 
     //Phones
@@ -369,6 +377,12 @@ public class ContactsServicePlugin implements MethodCallHandler {
                     new String[]{String.valueOf(contact.identifier), ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE});
     ops.add(op.build());
 
+    //Photo
+    op = ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI)
+            .withSelection(ContactsContract.Data.CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "=?",
+                    new String[]{String.valueOf(contact.identifier), ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE});
+    ops.add(op.build());
+
     // Update data (name)
     op = ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
             .withSelection(ContactsContract.Data.CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "=?",
@@ -394,6 +408,15 @@ public class ContactsServicePlugin implements MethodCallHandler {
             .withValue(ContactsContract.Data.RAW_CONTACT_ID, contact.identifier)
             .withValue(CommonDataKinds.Note.NOTE, contact.note);
     ops.add(op.build());
+
+    //Photo
+    op = ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+          .withValue(ContactsContract.Data.RAW_CONTACT_ID, contact.identifier)
+          .withValue(ContactsContract.Data.IS_SUPER_PRIMARY, 1)
+          .withValue(ContactsContract.CommonDataKinds.Photo.PHOTO, contact.avatar)
+          .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE);
+    ops.add(op.build());
+
 
     for (Item phone : contact.phones) {
       op = ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
