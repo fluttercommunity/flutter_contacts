@@ -89,8 +89,10 @@ public class Item{
                     return CommonDataKinds.Phone.TYPE_COMPANY_MAIN;
                 case "pager":
                     return CommonDataKinds.Phone.TYPE_PAGER;
-                default:
+                case "other":
                     return CommonDataKinds.Phone.TYPE_OTHER;
+                default:
+                    return CommonDataKinds.Phone.TYPE_CUSTOM;
             }
         }
         return CommonDataKinds.Phone.TYPE_OTHER;
