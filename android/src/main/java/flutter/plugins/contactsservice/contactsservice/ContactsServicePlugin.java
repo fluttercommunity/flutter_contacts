@@ -12,6 +12,8 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -20,6 +22,8 @@ import android.provider.BaseColumns;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -49,10 +53,10 @@ public class ContactsServicePlugin implements MethodCallHandler {
   public void onMethodCall(MethodCall call, Result result) {
     switch(call.method){
       case "getContacts":
-        this.getContacts((String)call.argument("query"), (boolean)call.argument("withThumbnails"), result);
+        this.getContacts((String)call.argument("query"), (boolean)call.argument("withThumbnails"), (boolean)call.argument("photoHighResolution"), result);
         break;
       case "getContactsForPhone":
-        this.getContactsForPhone((String)call.argument("phone"), (boolean)call.argument("withThumbnails"), result);
+        this.getContactsForPhone((String)call.argument("phone"), (boolean)call.argument("withThumbnails"), (boolean)call.argument("photoHighResolution"), result);
         break;
       case "addContact":
         Contact c = Contact.fromMap((HashMap)call.arguments);
@@ -119,12 +123,12 @@ public class ContactsServicePlugin implements MethodCallHandler {
 
 
   @TargetApi(Build.VERSION_CODES.ECLAIR)
-  private void getContacts(String query, boolean withThumbnails, Result result) {
-    new GetContactsTask(result, withThumbnails).execute(query, false);
+  private void getContacts(String query, boolean withThumbnails, boolean photoHighResolution, Result result) {
+    new GetContactsTask(result, withThumbnails, photoHighResolution).execute(query, false);
   }
 
-  private void getContactsForPhone(String phone, boolean withThumbnails, Result result) {
-    new GetContactsTask(result, withThumbnails).execute(phone, true);
+  private void getContactsForPhone(String phone, boolean withThumbnails, boolean photoHighResolution, Result result) {
+    new GetContactsTask(result, withThumbnails, photoHighResolution).execute(phone, true);
   }
 
   @TargetApi(Build.VERSION_CODES.CUPCAKE)
@@ -133,7 +137,7 @@ public class ContactsServicePlugin implements MethodCallHandler {
     private Result getContactResult;
     private boolean withThumbnails;
 
-    public GetContactsTask(Result result, boolean withThumbnails){
+    public GetContactsTask(Result result, boolean withThumbnails, boolean photoHighResolution){
       this.getContactResult = result;
       this.withThumbnails = withThumbnails;
     }
@@ -148,7 +152,11 @@ public class ContactsServicePlugin implements MethodCallHandler {
 
       if (withThumbnails) {
         for(Contact c : contacts){
-          setAvatarDataForContactIfAvailable(c);
+          loadContactPhotoHighRes(c, (Boolean) params[3]);
+//          if ((Boolean) params[3])
+//              loadContactPhotoHighRes(c, (Boolean) params[3]);
+//          else
+//              setAvatarDataForContactIfAvailable(c);
         }
       }
       //Transform the list of contacts to a list of Map
@@ -279,6 +287,22 @@ public class ContactsServicePlugin implements MethodCallHandler {
     if (avatarCursor != null) {
       avatarCursor.close();
     }
+  }
+
+  private void loadContactPhotoHighRes(Contact contact, boolean photoHighResolution) {
+    Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Long.parseLong(contact.identifier));
+    InputStream input = ContactsContract.Contacts.openContactPhotoInputStream(contentResolver, uri, photoHighResolution);
+
+    if (input == null){
+        contact.avatar = new byte[0];
+        return;
+    }
+
+    Bitmap bitmap = BitmapFactory.decodeStream(input);
+    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+    contact.avatar = stream.toByteArray();
+
   }
 
   private boolean addContact(Contact contact){
