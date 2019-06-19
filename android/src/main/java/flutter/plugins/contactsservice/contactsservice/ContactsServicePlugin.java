@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.RemoteException;
+import android.provider.BaseColumns;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
 
@@ -49,6 +50,9 @@ public class ContactsServicePlugin implements MethodCallHandler {
     switch(call.method){
       case "getContacts":
         this.getContacts((String)call.argument("query"), (boolean)call.argument("withThumbnails"), result);
+        break;
+      case "getContactsForPhone":
+        this.getContactsForPhone((String)call.argument("phone"), (boolean)call.argument("withThumbnails"), result);
         break;
       case "addContact":
         Contact c = Contact.fromMap((HashMap)call.arguments);
@@ -116,11 +120,15 @@ public class ContactsServicePlugin implements MethodCallHandler {
 
   @TargetApi(Build.VERSION_CODES.ECLAIR)
   private void getContacts(String query, boolean withThumbnails, Result result) {
-    new GetContactsTask(result, withThumbnails).execute(new String[] {query});
+    new GetContactsTask(result, withThumbnails).execute(query, false);
+  }
+
+  private void getContactsForPhone(String phone, boolean withThumbnails, Result result) {
+    new GetContactsTask(result, withThumbnails).execute(phone, true);
   }
 
   @TargetApi(Build.VERSION_CODES.CUPCAKE)
-  private class GetContactsTask extends AsyncTask<String, Void, ArrayList<HashMap>> {
+  private class GetContactsTask extends AsyncTask<Object, Void, ArrayList<HashMap>> {
 
     private Result getContactResult;
     private boolean withThumbnails;
@@ -131,8 +139,13 @@ public class ContactsServicePlugin implements MethodCallHandler {
     }
 
     @TargetApi(Build.VERSION_CODES.ECLAIR)
-    protected ArrayList<HashMap> doInBackground(String... query) {
-      ArrayList<Contact> contacts = getContactsFrom(getCursor(query[0]));
+    protected ArrayList<HashMap> doInBackground(Object... params) {
+      ArrayList<Contact> contacts;
+      if ((Boolean) params[1])
+        contacts = getContactsFrom(getCursorForPhone(((String) params[0])));
+      else
+        contacts = getContactsFrom(getCursor(((String) params[0])));
+
       if (withThumbnails) {
         for(Contact c : contacts){
           setAvatarDataForContactIfAvailable(c);
@@ -167,6 +180,30 @@ public class ContactsServicePlugin implements MethodCallHandler {
       selection = ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " LIKE ?";
     }
     return contentResolver.query(ContactsContract.Data.CONTENT_URI, PROJECTION, selection, selectionArgs, null);
+  }
+
+  private Cursor getCursorForPhone(String phone) {
+    if (phone.isEmpty())
+      return null;
+
+    Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phone));
+    String[] projection = new String[]{BaseColumns._ID};
+
+    ArrayList<String> contactIds = new ArrayList<>();
+    Cursor phoneCursor = contentResolver.query(uri, projection, null, null, null);
+    while (phoneCursor != null && phoneCursor.moveToNext()){
+      contactIds.add(phoneCursor.getString(phoneCursor.getColumnIndex(BaseColumns._ID)));
+    }
+    if (phoneCursor!= null)
+      phoneCursor.close();
+
+    if (!contactIds.isEmpty()) {
+      String contactIdsListString = contactIds.toString().replace("[", "(").replace("]", ")");
+      String contactSelection = ContactsContract.Data.CONTACT_ID + " IN " + contactIdsListString;
+      return contentResolver.query(ContactsContract.Data.CONTENT_URI, PROJECTION, contactSelection, null, null);
+    }
+
+    return null;
   }
 
   /**
