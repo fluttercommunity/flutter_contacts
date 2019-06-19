@@ -215,6 +215,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
                     CNContactPostalAddressesKey,
                     CNContactOrganizationNameKey,
                     CNContactNoteKey,
+                    CNContactImageDataKey,
                     CNContactJobTitleKey] as [Any]
         do {
             // Check if the contact exists

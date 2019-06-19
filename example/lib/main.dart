@@ -45,6 +45,14 @@ class _ContactListPageState extends State<ContactListPage> {
     }
   }
 
+  updateContact() async {
+    Contact ninja = _contacts.toList().firstWhere((contact) => contact.familyName.startsWith("Ninja"));
+    ninja.avatar = null;
+    await ContactsService.updateContact(ninja);
+
+    refreshContacts();
+  }
+  
   Future<PermissionStatus> _getContactPermission() async {
     PermissionStatus permission = await PermissionHandler().checkPermissionStatus(PermissionGroup.contacts);
     if (permission != PermissionStatus.granted && permission != PermissionStatus.disabled) {
