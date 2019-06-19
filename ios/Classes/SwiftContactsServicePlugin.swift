@@ -62,10 +62,11 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
 //                        try contactsStore.enumerateContactsWithFetchRequest(CNContactFetchRequest(keysToFetch: keys)) {
 //                            (contact, cursor) -> Void in
 //                            if (!contact.phoneNumbers.isEmpty) {
-//                                let phoneNumberToCompareAgainst = phoneNumber.componentsSeparatedByCharactersInSet(NSCharacterSet.decimalDigitCharacterSet().invertedSet).joinWithSeparator("")
+////                                let phoneNumberToCompareAgainst = phoneNumber.componentsSeparatedByCharactersInSet(NSCharacterSet.decimalDigitCharacterSet().invertedSet).joinWithSeparator("")
+//                                let phoneNumberToCompareAgainst = phoneNumber.components(separatedBy: NSCharacterSet.decimalDigitCharacterSet().invertedSet).joinWithSeparator("")
 //                                for phoneNumber in contact.phoneNumbers {
 //                                    if let phoneNumberStruct = phoneNumber.value as? CNPhoneNumber {
-//                                        let phoneNumberString = phoneNumberStruct.stringValue
+//                                        let phoneNumberString = phoneNumberStruct.stingValue
 //                                        let phoneNumberToCompare = phoneNumberString.componentsSeparatedByCharactersInSet(NSCharacterSet.decimalDigitCharacterSet().invertedSet).joinWithSeparator("")
 //                                        if phoneNumberToCompare == phoneNumberToCompareAgainst {
 //                                            contacts.append(contact)
@@ -115,7 +116,10 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
 //    }
 
     func getContacts(query : String?, withThumbnails: Bool, photoHighResolution: Bool, phoneQuery: Bool) -> [[String:Any]]{
+        
         var contacts : [CNContact] = []
+        var result = [[String:Any]]()
+        
         //Create the store, keys & fetch request
         let store = CNContactStore()
         var keys = [CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
@@ -141,28 +145,55 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
         
         let fetchRequest = CNContactFetchRequest(keysToFetch: keys as! [CNKeyDescriptor])
         // Set the predicate if there is a query
-        if let query = query{
-            fetchRequest.predicate = CNContact.predicateForContacts(matchingName: query)
-            
+        if query != nil && !phoneQuery {
+            fetchRequest.predicate = CNContact.predicateForContacts(matchingName: query!)
         }
+        
         // Fetch contacts
         do{
             try store.enumerateContacts(with: fetchRequest, usingBlock: { (contact, stop) -> Void in
-                contacts.append(contact)
+
+                if phoneQuery {
+                    if query != nil && self.has(contact: contact, phone: query!){
+                        contacts.append(contact)
+                    }
+                } else {
+                    contacts.append(contact)
+                }
+
             })
         }
         catch let error as NSError {
             print(error.localizedDescription)
-            return []
+            return result
         }
+        
+        
+        
         // Transform the CNContacts into dictionaries
-        var result = [[String:Any]]()
         for contact : CNContact in contacts{
             result.append(contactToDictionary(contact: contact))
         }
         return result
     }
 
+    private func has(contact: CNContact, phone: String) -> Bool {
+        if (!contact.phoneNumbers.isEmpty) {
+            let phoneNumberToCompareAgainst = phone.components(separatedBy: NSCharacterSet.decimalDigits.inverted).joined(separator: "")
+            for phoneNumber in contact.phoneNumbers {
+                
+                if let phoneNumberStruct = phoneNumber.value as CNPhoneNumber? {
+                    let phoneNumberString = phoneNumberStruct.stringValue
+                    let phoneNumberToCompare = phoneNumberString.components(separatedBy: NSCharacterSet.decimalDigits.inverted).joined(separator: "")
+                    if phoneNumberToCompare == phoneNumberToCompareAgainst {
+                        return true
+                    }
+                }
+            }
+        }
+        return false
+    }
+    
     func addContact(contact : CNMutableContact) -> String {
         let store = CNContactStore()
         do {
