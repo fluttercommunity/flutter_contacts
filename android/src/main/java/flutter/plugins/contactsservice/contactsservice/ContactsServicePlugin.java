@@ -136,10 +136,12 @@ public class ContactsServicePlugin implements MethodCallHandler {
 
     private Result getContactResult;
     private boolean withThumbnails;
+    private boolean photoHighResolution;
 
     public GetContactsTask(Result result, boolean withThumbnails, boolean photoHighResolution){
       this.getContactResult = result;
       this.withThumbnails = withThumbnails;
+      this.photoHighResolution = photoHighResolution;
     }
 
     @TargetApi(Build.VERSION_CODES.ECLAIR)
@@ -152,7 +154,7 @@ public class ContactsServicePlugin implements MethodCallHandler {
 
       if (withThumbnails) {
         for(Contact c : contacts){
-          loadContactPhotoHighRes(c, (Boolean) params[3]);
+          loadContactPhotoHighRes(c, photoHighResolution);
 //          if ((Boolean) params[3])
 //              loadContactPhotoHighRes(c, (Boolean) params[3]);
 //          else
