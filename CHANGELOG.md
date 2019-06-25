@@ -1,3 +1,11 @@
+## [0.2.8] - June 24th, 2019
+
+* Android add avatar image - was not working.
+* Android and iOS - update avatar image.
+* Android custom phone label - adding label other then predefined ones sets the label to specified value.
+* Android and iOS - on getContacts get the higher resolution image (photoHighResolution). Only when withThumbnails is true. photoHighResolution set to default when getting contact. Default is photoHighResolution = true because if you update the contact after getting, it will update the original size picture.
+* Android and iOS - getContactsForPhone(String phone, {bool withThumbnails = true, bool photoHighResolution = true}) - gets the contacts with phone filter.
+
 ## [0.2.7] - May 24th, 2019
 
 * Removed path_provider

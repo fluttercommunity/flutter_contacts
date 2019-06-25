@@ -13,13 +13,29 @@ class ContactsService {
 
   /// Fetches all contacts, or when specified, the contacts with a name
   /// matching [query]
-  static Future<Iterable<Contact>> getContacts({String query, bool withThumbnails = true}) async {
+  static Future<Iterable<Contact>> getContacts({String query, bool withThumbnails = true, bool photoHighResolution = true}) async {
     Iterable contacts = await _channel.invokeMethod('getContacts', <String, dynamic> {
       'query': query,
-      'withThumbnails': withThumbnails
+      'withThumbnails': withThumbnails,
+      'photoHighResolution': photoHighResolution
     });
     return contacts.map((m) => Contact.fromMap(m));
   }
+
+  /// Fetches all contacts, or when specified, the contacts with a name
+  /// matching [query]
+  static Future<Iterable<Contact>> getContactsForPhone(String phone, {bool withThumbnails = true, bool photoHighResolution = true}) async {
+    if(phone == null || phone.isEmpty )
+      return Iterable.empty();
+
+    Iterable contacts = await _channel.invokeMethod('getContactsForPhone', <String, dynamic> {
+      'phone': phone,
+      'withThumbnails': withThumbnails,
+      'photoHighResolution': photoHighResolution
+    });
+    return contacts.map((m) => Contact.fromMap(m));
+  }
+
 
   /// Adds the [contact] to the device contact list
   static Future addContact(Contact contact) =>

@@ -14,7 +14,12 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
         switch call.method {
         case "getContacts":
             let arguments = call.arguments as! [String:Any]
-            result(getContacts(query: (arguments["query"] as? String), withThumbnails: arguments["withThumbnails"] as! Bool))
+            result(getContacts(query: (arguments["query"] as? String), withThumbnails: arguments["withThumbnails"] as! Bool,
+                               photoHighResolution: arguments["photoHighResolution"] as! Bool, phoneQuery:  false))
+        case "getContactsForPhone":
+            let arguments = call.arguments as! [String:Any]
+            result(getContacts(query: (arguments["phone"] as? String), withThumbnails: arguments["withThumbnails"] as! Bool,
+                               photoHighResolution: arguments["photoHighResolution"] as! Bool, phoneQuery:  true))
         case "addContact":
             let contact = dictionaryToContact(dictionary: call.arguments as! [String : Any])
 
@@ -43,60 +48,86 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
             result(FlutterMethodNotImplemented)
         }
     }
-    
-    func getContacts(query : String?, withThumbnails: Bool) -> [[String:Any]]{
+
+    func getContacts(query : String?, withThumbnails: Bool, photoHighResolution: Bool, phoneQuery: Bool) -> [[String:Any]]{
+        
         var contacts : [CNContact] = []
+        var result = [[String:Any]]()
+        
         //Create the store, keys & fetch request
         let store = CNContactStore()
-        let keys = withThumbnails == true
-            ? [CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
-               CNContactEmailAddressesKey,
-               CNContactPhoneNumbersKey,
-               CNContactFamilyNameKey,
-               CNContactGivenNameKey,
-               CNContactMiddleNameKey,
-               CNContactNamePrefixKey,
-               CNContactNameSuffixKey,
-               CNContactPostalAddressesKey,
-               CNContactOrganizationNameKey,
-               CNContactThumbnailImageDataKey,
-               CNContactNoteKey,
-               CNContactJobTitleKey] as [Any]
-            : [CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
-               CNContactEmailAddressesKey,
-               CNContactPhoneNumbersKey,
-               CNContactFamilyNameKey,
-               CNContactGivenNameKey,
-               CNContactMiddleNameKey,
-               CNContactNamePrefixKey,
-               CNContactNameSuffixKey,
-               CNContactPostalAddressesKey,
-               CNContactOrganizationNameKey,
-               CNContactNoteKey,
-               CNContactJobTitleKey] as [Any]
+        var keys = [CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
+                    CNContactEmailAddressesKey,
+                    CNContactPhoneNumbersKey,
+                    CNContactFamilyNameKey,
+                    CNContactGivenNameKey,
+                    CNContactMiddleNameKey,
+                    CNContactNamePrefixKey,
+                    CNContactNameSuffixKey,
+                    CNContactPostalAddressesKey,
+                    CNContactOrganizationNameKey,
+                    CNContactNoteKey,
+                    CNContactJobTitleKey] as [Any]
+        
+        if(withThumbnails){
+            if(photoHighResolution){
+                keys.append(CNContactImageDataKey)
+            } else {
+                keys.append(CNContactThumbnailImageDataKey)
+            }
+        }
+        
         let fetchRequest = CNContactFetchRequest(keysToFetch: keys as! [CNKeyDescriptor])
         // Set the predicate if there is a query
-        if let query = query{
-            fetchRequest.predicate = CNContact.predicateForContacts(matchingName: query)
+        if query != nil && !phoneQuery {
+            fetchRequest.predicate = CNContact.predicateForContacts(matchingName: query!)
         }
+        
         // Fetch contacts
         do{
             try store.enumerateContacts(with: fetchRequest, usingBlock: { (contact, stop) -> Void in
-                contacts.append(contact)
+
+                if phoneQuery {
+                    if query != nil && self.has(contact: contact, phone: query!){
+                        contacts.append(contact)
+                    }
+                } else {
+                    contacts.append(contact)
+                }
+
             })
         }
         catch let error as NSError {
             print(error.localizedDescription)
-            return []
+            return result
         }
+        
+        
+        
         // Transform the CNContacts into dictionaries
-        var result = [[String:Any]]()
         for contact : CNContact in contacts{
             result.append(contactToDictionary(contact: contact))
         }
         return result
     }
 
+    private func has(contact: CNContact, phone: String) -> Bool {
+        if (!contact.phoneNumbers.isEmpty) {
+            let phoneNumberToCompareAgainst = phone.components(separatedBy: NSCharacterSet.decimalDigits.inverted).joined(separator: "")
+            for phoneNumber in contact.phoneNumbers {
+                
+                if let phoneNumberStruct = phoneNumber.value as CNPhoneNumber? {
+                    let phoneNumberString = phoneNumberStruct.stringValue
+                    let phoneNumberToCompare = phoneNumberString.components(separatedBy: NSCharacterSet.decimalDigits.inverted).joined(separator: "")
+                    if phoneNumberToCompare == phoneNumberToCompareAgainst {
+                        return true
+                    }
+                }
+            }
+        }
+        return false
+    }
+    
     func addContact(contact : CNMutableContact) -> String {
         let store = CNContactStore()
         do {
@@ -149,6 +180,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
                     CNContactPostalAddressesKey,
                     CNContactOrganizationNameKey,
                     CNContactNoteKey,
+                    CNContactImageDataKey,
                     CNContactJobTitleKey] as [Any]
         do {
             // Check if the contact exists
@@ -164,6 +196,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
                 contact.organizationName = dictionary["company"] as? String ?? ""
                 contact.jobTitle = dictionary["jobTitle"] as? String ?? ""
                 contact.note = dictionary["note"] as? String ?? ""
+                contact.imageData = (dictionary["avatar"] as? FlutterStandardTypedData)?.data
 
                 //Phone numbers
                 if let phoneNumbers = dictionary["phones"] as? [[String:String]]{
@@ -278,6 +311,11 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin {
         result["note"] = contact.note
         if contact.isKeyAvailable(CNContactThumbnailImageDataKey) {
             if let avatarData = contact.thumbnailImageData {
+                result["avatar"] = FlutterStandardTypedData(bytes: avatarData)
+            }
+        }
+        if contact.isKeyAvailable(CNContactImageDataKey) {
+            if let avatarData = contact.imageData {
                 result["avatar"] = FlutterStandardTypedData(bytes: avatarData)
             }
         }
