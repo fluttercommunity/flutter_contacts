@@ -12,13 +12,18 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.RemoteException;
+import android.provider.BaseColumns;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -48,7 +53,10 @@ public class ContactsServicePlugin implements MethodCallHandler {
   public void onMethodCall(MethodCall call, Result result) {
     switch(call.method){
       case "getContacts":
-        this.getContacts((String)call.argument("query"), (boolean)call.argument("withThumbnails"), result);
+        this.getContacts((String)call.argument("query"), (boolean)call.argument("withThumbnails"), (boolean)call.argument("photoHighResolution"), result);
+        break;
+      case "getContactsForPhone":
+        this.getContactsForPhone((String)call.argument("phone"), (boolean)call.argument("withThumbnails"), (boolean)call.argument("photoHighResolution"), result);
         break;
       case "addContact":
         Contact c = Contact.fromMap((HashMap)call.arguments);
@@ -115,27 +123,42 @@ public class ContactsServicePlugin implements MethodCallHandler {
 
 
   @TargetApi(Build.VERSION_CODES.ECLAIR)
-  private void getContacts(String query, boolean withThumbnails, Result result) {
-    new GetContactsTask(result, withThumbnails).execute(new String[] {query});
+  private void getContacts(String query, boolean withThumbnails, boolean photoHighResolution, Result result) {
+    new GetContactsTask(result, withThumbnails, photoHighResolution).execute(query, false);
+  }
+
+  private void getContactsForPhone(String phone, boolean withThumbnails, boolean photoHighResolution, Result result) {
+    new GetContactsTask(result, withThumbnails, photoHighResolution).execute(phone, true);
   }
 
   @TargetApi(Build.VERSION_CODES.CUPCAKE)
-  private class GetContactsTask extends AsyncTask<String, Void, ArrayList<HashMap>> {
+  private class GetContactsTask extends AsyncTask<Object, Void, ArrayList<HashMap>> {
 
     private Result getContactResult;
     private boolean withThumbnails;
+    private boolean photoHighResolution;
 
-    public GetContactsTask(Result result, boolean withThumbnails){
+    public GetContactsTask(Result result, boolean withThumbnails, boolean photoHighResolution){
       this.getContactResult = result;
       this.withThumbnails = withThumbnails;
+      this.photoHighResolution = photoHighResolution;
     }
 
     @TargetApi(Build.VERSION_CODES.ECLAIR)
-    protected ArrayList<HashMap> doInBackground(String... query) {
-      ArrayList<Contact> contacts = getContactsFrom(getCursor(query[0]));
+    protected ArrayList<HashMap> doInBackground(Object... params) {
+      ArrayList<Contact> contacts;
+      if ((Boolean) params[1])
+        contacts = getContactsFrom(getCursorForPhone(((String) params[0])));
+      else
+        contacts = getContactsFrom(getCursor(((String) params[0])));
+
       if (withThumbnails) {
         for(Contact c : contacts){
-          setAvatarDataForContactIfAvailable(c);
+          loadContactPhotoHighRes(c, photoHighResolution);
+//          if ((Boolean) params[3])
+//              loadContactPhotoHighRes(c, (Boolean) params[3]);
+//          else
+//              setAvatarDataForContactIfAvailable(c);
         }
       }
       //Transform the list of contacts to a list of Map
@@ -167,6 +190,30 @@ public class ContactsServicePlugin implements MethodCallHandler {
       selection = ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " LIKE ?";
     }
     return contentResolver.query(ContactsContract.Data.CONTENT_URI, PROJECTION, selection, selectionArgs, null);
+  }
+
+  private Cursor getCursorForPhone(String phone) {
+    if (phone.isEmpty())
+      return null;
+
+    Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phone));
+    String[] projection = new String[]{BaseColumns._ID};
+
+    ArrayList<String> contactIds = new ArrayList<>();
+    Cursor phoneCursor = contentResolver.query(uri, projection, null, null, null);
+    while (phoneCursor != null && phoneCursor.moveToNext()){
+      contactIds.add(phoneCursor.getString(phoneCursor.getColumnIndex(BaseColumns._ID)));
+    }
+    if (phoneCursor!= null)
+      phoneCursor.close();
+
+    if (!contactIds.isEmpty()) {
+      String contactIdsListString = contactIds.toString().replace("[", "(").replace("]", ")");
+      String contactSelection = ContactsContract.Data.CONTACT_ID + " IN " + contactIdsListString;
+      return contentResolver.query(ContactsContract.Data.CONTENT_URI, PROJECTION, contactSelection, null, null);
+    }
+
+    return null;
   }
 
   /**
@@ -244,6 +291,22 @@ public class ContactsServicePlugin implements MethodCallHandler {
     }
   }
 
+  private void loadContactPhotoHighRes(Contact contact, boolean photoHighResolution) {
+    Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Long.parseLong(contact.identifier));
+    InputStream input = ContactsContract.Contacts.openContactPhotoInputStream(contentResolver, uri, photoHighResolution);
+
+    if (input == null){
+        contact.avatar = new byte[0];
+        return;
+    }
+
+    Bitmap bitmap = BitmapFactory.decodeStream(input);
+    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+    contact.avatar = stream.toByteArray();
+
+  }
+
   private boolean addContact(Contact contact){
 
     ArrayList<ContentProviderOperation> ops = new ArrayList<>();
@@ -276,6 +339,14 @@ public class ContactsServicePlugin implements MethodCallHandler {
             .withValue(Organization.TITLE, contact.jobTitle);
     ops.add(op.build());
 
+    //Photo
+    op = ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+            .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+            .withValue(ContactsContract.Data.IS_SUPER_PRIMARY, 1)
+            .withValue(ContactsContract.CommonDataKinds.Photo.PHOTO, contact.avatar)
+            .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE);
+    ops.add(op.build());
+
     op.withYieldAllowed(true);
 
     //Phones
@@ -283,8 +354,14 @@ public class ContactsServicePlugin implements MethodCallHandler {
       op = ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
               .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
               .withValue(ContactsContract.Data.MIMETYPE, CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
-              .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, phone.value)
-              .withValue(CommonDataKinds.Phone.TYPE, Item.stringToPhoneType(phone.label));
+              .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, phone.value);
+
+      if (Item.stringToPhoneType(phone.label) == ContactsContract.CommonDataKinds.Phone.TYPE_CUSTOM){
+        op.withValue( ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.BaseTypes.TYPE_CUSTOM );
+        op.withValue(ContactsContract.CommonDataKinds.Phone.LABEL, phone.label);
+      } else
+        op.withValue( ContactsContract.CommonDataKinds.Phone.TYPE, Item.stringToPhoneType(phone.label) );
+
       ops.add(op.build());
     }
 
@@ -363,6 +440,12 @@ public class ContactsServicePlugin implements MethodCallHandler {
                     new String[]{String.valueOf(contact.identifier), ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE});
     ops.add(op.build());
 
+    //Photo
+    op = ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI)
+            .withSelection(ContactsContract.Data.CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "=?",
+                    new String[]{String.valueOf(contact.identifier), ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE});
+    ops.add(op.build());
+
     // Update data (name)
     op = ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
             .withSelection(ContactsContract.Data.CONTACT_ID + "=? AND " + ContactsContract.Data.MIMETYPE + "=?",
@@ -389,12 +472,27 @@ public class ContactsServicePlugin implements MethodCallHandler {
             .withValue(CommonDataKinds.Note.NOTE, contact.note);
     ops.add(op.build());
 
+    //Photo
+    op = ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+          .withValue(ContactsContract.Data.RAW_CONTACT_ID, contact.identifier)
+          .withValue(ContactsContract.Data.IS_SUPER_PRIMARY, 1)
+          .withValue(ContactsContract.CommonDataKinds.Photo.PHOTO, contact.avatar)
+          .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE);
+    ops.add(op.build());
+
+
     for (Item phone : contact.phones) {
       op = ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
               .withValue(ContactsContract.Data.MIMETYPE, CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
               .withValue(ContactsContract.Data.RAW_CONTACT_ID, contact.identifier)
-              .withValue(Phone.NUMBER, phone.value)
-              .withValue(Phone.TYPE, Item.stringToPhoneType(phone.label));
+              .withValue(Phone.NUMBER, phone.value);
+
+      if (Item.stringToPhoneType(phone.label) == ContactsContract.CommonDataKinds.Phone.TYPE_CUSTOM){
+        op.withValue( ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.BaseTypes.TYPE_CUSTOM );
+        op.withValue(ContactsContract.CommonDataKinds.Phone.LABEL, phone.label);
+      } else
+        op.withValue( ContactsContract.CommonDataKinds.Phone.TYPE, Item.stringToPhoneType(phone.label) );
+
       ops.add(op.build());
     }
 
