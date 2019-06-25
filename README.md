@@ -12,7 +12,7 @@ To use this plugin, add `contacts_service` as a [dependency in your `pubspec.yam
 For example:  
 ```yaml  
 dependencies:  
-    contacts_service: ^0.2.7
+    contacts_service: ^0.2.8
 ```  
   
 ## Permissions  
@@ -90,10 +90,6 @@ Uint8List avatar;
   
 ![Example](doc/example.gif "Example screenshot")  
   
-## Todo
-
-- [ ] update contact image
-
 ## Contributions
 
 Contributions are welcome! If you find a bug or want a feature, please fill an issue.
