@@ -23,6 +23,7 @@ import android.provider.ContactsContract;
 import android.text.TextUtils;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -296,19 +297,25 @@ public class ContactsServicePlugin implements MethodCallHandler {
   }
 
   private void loadContactPhotoHighRes(Contact contact, boolean photoHighResolution) {
-    Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Long.parseLong(contact.identifier));
-    InputStream input = ContactsContract.Contacts.openContactPhotoInputStream(contentResolver, uri, photoHighResolution);
+      try {
+          Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Long.parseLong(contact.identifier));
+          InputStream input = ContactsContract.Contacts.openContactPhotoInputStream(contentResolver, uri, photoHighResolution);
 
-    if (input == null){
-        contact.avatar = new byte[0];
-        return;
-    }
+          if (input == null){
+              contact.avatar = new byte[0];
+              return;
+          }
 
-    Bitmap bitmap = BitmapFactory.decodeStream(input);
-    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-    contact.avatar = stream.toByteArray();
+          Bitmap bitmap = BitmapFactory.decodeStream(input);
+          input.close();
+          ByteArrayOutputStream stream = new ByteArrayOutputStream();
+          bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+          contact.avatar = stream.toByteArray();
+          stream.close();
 
+      } catch (IOException e){
+          e.printStackTrace();
+      }
   }
 
   private boolean addContact(Contact contact){
