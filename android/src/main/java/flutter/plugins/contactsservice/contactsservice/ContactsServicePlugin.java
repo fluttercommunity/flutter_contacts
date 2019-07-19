@@ -274,6 +274,10 @@ public class ContactsServicePlugin implements MethodCallHandler {
         contact.postalAddresses.add(new PostalAddress(cursor));
       }
     }
+
+    if(cursor != null)
+      cursor.close();
+
     return new ArrayList<>(map.values());
   }
 
@@ -407,6 +411,7 @@ public class ContactsServicePlugin implements MethodCallHandler {
       return true;
     } catch (Exception e) {
       return false;
+
     }
   }
 
