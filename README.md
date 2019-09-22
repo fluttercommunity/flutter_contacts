@@ -1,4 +1,6 @@
-[![Flutter Community: contacts_service](https://fluttercommunity.dev/_github/header/contacts_service)](https://github.com/fluttercommunity/community)
+# NOTICE
+
+This plugin is actively maintained at [https://github.com/lukasgit/flutter_contacts](https://github.com/lukasgit/flutter_contacts).
 
 # contacts_service  
 [![pub package](https://img.shields.io/pub/v/contacts_service.svg)](https://pub.dartlang.org/packages/contacts_service)
