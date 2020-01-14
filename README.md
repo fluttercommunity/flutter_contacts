@@ -15,7 +15,7 @@ To use this plugin, add `contacts_service` as a [dependency in your `pubspec.yam
 For example:  
 ```yaml  
 dependencies:  
-    contacts_service: ^0.2.8
+    contacts_service: ^0.3.10
 ```  
   
 ## Permissions  
