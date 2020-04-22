@@ -1,6 +1,6 @@
 # NOTICE
 
-This plugin is actively maintained at [https://github.com/lukasgit/flutter_contacts](https://github.com/lukasgit/flutter_contacts).
+This plugin is actively maintained at [https://github.com/lukasgit/flutter_contacts](https://github.com/lukasgit/flutter_contacts)
 
 # contacts_service  
 [![pub package](https://img.shields.io/pub/v/contacts_service.svg)](https://pub.dartlang.org/packages/contacts_service)
